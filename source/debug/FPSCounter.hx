@@ -72,7 +72,7 @@ class FPSCounter extends TextField
 		+ '\nMemory: ${flixel.util.FlxStringUtil.formatBytes(memoryMegas)}'
 		+ '\nMemory Peak: ${flixel.util.FlxStringUtil.formatBytes(memp)}'
 		+ '\nFrame Time: $ft MS'
-		+ '\n${Main.MAIN_Version}${#if BETA Main.BETA_Version #end}';
+		+ '\n${Main.MAIN_Version}';
 
 		if(ClientPrefs.debug.debugMode/* && ClientPrefs.data.debugText*/) {
 			text += '\nSYSTEM: ${Sys.systemName()}';
