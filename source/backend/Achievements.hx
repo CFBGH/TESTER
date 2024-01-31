@@ -23,6 +23,20 @@ typedef Achievement =
 }
 
 class Achievements {
+	/*public static var list:Array<Dynamic> = [
+		['friday_night_play',		{name: "Freaky on a Friday Night", description: "Play on a Friday... Night.", hidden: true}],
+		['week1_nomiss',			{name: "She Calls Me Daddy Too", description: "Beat Week 1 on Hard with no Misses."}],
+		['week2_nomiss',			{name: "No More Tricks", description: "Beat Week 2 on Hard with no Misses."}],
+		['week3_nomiss',			{name: "Call Me The Hitman", description: "Beat Week 3 on Hard with no Misses."}],
+		['week4_nomiss',			{name: "Lady Killer", description: "Beat Week 4 on Hard with no Misses."}],
+		['week5_nomiss',			{name: "Missless Christmas", description: "Beat Week 5 on Hard with no Misses."}],
+		['week6_nomiss',			{name: "Highscore!!", description: "Beat Week 6 on Hard with no Misses."}],
+		['week7_nomiss',			{name: "God Effing Damn It!", description: "Beat Week 7 on Hard with no Misses."}],
+		['ur_bad',					{name: "What a Funkin' Disaster!", description: "Complete a Song with a rating lower than 20%."}],
+		
+	];
+
+	//backup
 	public static function init()
 	{
 		createAchievement('friday_night_play',		{name: "Freaky on a Friday Night", description: "Play on a Friday... Night.", hidden: true});
@@ -36,11 +50,38 @@ class Achievements {
 		createAchievement('ur_bad',					{name: "What a Funkin' Disaster!", description: "Complete a Song with a rating lower than 20%."});
 		createAchievement('ur_good',				{name: "Perfectionist", description: "Complete a Song with a rating of 100%."});
 		createAchievement('roadkill_enthusiast',	{name: "Roadkill Enthusiast", description: "Watch the Henchmen die 50 times.", maxScore: 50, maxDecimals: 0});
-		createAchievement('oversinging', 			{name: "Oversinging Much...?", description: "Sing for 10 seconds without going back to Idle."});
-		createAchievement('hype',					{name: "Hyperactive", description: "Finish a Song without going back to Idle."});
+		createAchievement('oversinging', 			{name: "Oversinging Much...?", description: "Hold down a note for 10 seconds."});
+		createAchievement('hype',					{name: "Hyperactive", description: "Finish a Song without going Idle."});
 		createAchievement('two_keys',				{name: "Just the Two of Us", description: "Finish a Song pressing only two keys."});
 		createAchievement('toastie',				{name: "Toaster Gamer", description: "Have you tried to run the game on a toaster?"});
+		createAchievement('roule',					{name: "Roulette Master", description: "When the \"Lunatic\" mode is turned on,play any song is completed with the standard of \"FC\" when there is a random is \"InstakillOnMiss\"."});
 		createAchievement('debugger',				{name: "Debugger", description: "Beat the \"Test\" Stage from the Chart Editor.", hidden: true});
+		createAchievement('new_year', 				{name: "Happy New Year", description: "It's new year", hidden: true});
+		
+		//dont delete this thing below
+		_originalLength = _sortID + 1;
+	}*/
+
+	public static function init()
+	{
+		createAchievement('friday_night_play',		{name: '${language.States.awards.title.a}', description: '${language.States.awards.descr.a}', hidden: true});
+		createAchievement('week1_nomiss',			{name: '${language.States.awards.title.b}', description: '${language.States.awards.descr.b}'});
+		createAchievement('week2_nomiss',			{name: '${language.States.awards.title.c}', description: '${language.States.awards.descr.c}'});
+		createAchievement('week3_nomiss',			{name: '${language.States.awards.title.d}', description: '${language.States.awards.descr.d}'});
+		createAchievement('week4_nomiss',			{name: '${language.States.awards.title.e}', description: '${language.States.awards.descr.e}'});
+		createAchievement('week5_nomiss',			{name: '${language.States.awards.title.f}', description: '${language.States.awards.descr.f}'});
+		createAchievement('week6_nomiss',			{name: '${language.States.awards.title.g}', description: '${language.States.awards.descr.g}'});
+		createAchievement('week7_nomiss',			{name: '${language.States.awards.title.h}', description: '${language.States.awards.descr.h}'});
+		createAchievement('ur_bad',					{name: '${language.States.awards.title.i}', description: '${language.States.awards.descr.i}'});
+		createAchievement('ur_good',				{name: '${language.States.awards.title.j}', description: '${language.States.awards.descr.j}'});
+		createAchievement('roadkill_enthusiast',	{name: '${language.States.awards.title.k}', description: '${language.States.awards.descr.k}', maxScore: 50, maxDecimals: 0});
+		createAchievement('oversinging', 			{name: '${language.States.awards.title.l}', description: '${language.States.awards.descr.l}'});
+		createAchievement('hype',					{name: '${language.States.awards.title.m}', description: '${language.States.awards.descr.m}'});
+		createAchievement('two_keys',				{name: '${language.States.awards.title.n}', description: '${language.States.awards.descr.n}'});
+		createAchievement('toastie',				{name: '${language.States.awards.title.o}', description: '${language.States.awards.descr.o}'});
+		createAchievement('roule',					{name: '${language.States.awards.title.p}', description: '${language.States.awards.descr.p}'});
+		createAchievement('debugger',				{name: '${language.States.awards.title.q}', description: '${language.States.awards.descr.q}', hidden: true});
+		createAchievement('new_year', 				{name: '${language.States.awards.title.r}', description: '${language.States.awards.descr.r}', hidden: true});
 		
 		//dont delete this thing below
 		_originalLength = _sortID + 1;
@@ -263,7 +304,6 @@ class Achievements {
 		}
 		return retVal;
 	}
-	#end
 
 	#if LUA_ALLOWED
 	public static function addLuaCallbacks(lua:State)
@@ -315,6 +355,7 @@ class Achievements {
 		});
 		Lua_helper.add_callback(lua, "achievementExists", function(name:String) return achievements.exists(name));
 	}
+	#end
 	#end
 }
 #end

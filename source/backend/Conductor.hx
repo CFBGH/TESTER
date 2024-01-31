@@ -25,6 +25,10 @@ class Conductor
 
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
 
+	public function new()
+	{
+	}
+
 	public static function judgeNote(arr:Array<Rating>, diff:Float=0):Rating // die
 	{
 		var data:Array<Rating> = arr;
@@ -141,5 +145,12 @@ class Conductor
 		stepCrochet = crochet / 4;
 
 		return bpm = newBPM;
+	}
+	public static function changeBPM(newBpm:Float)
+	{
+		bpm = newBpm;
+
+		crochet = calculateCrochet(bpm);
+		stepCrochet = crochet / 4;
 	}
 }
