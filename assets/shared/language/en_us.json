@@ -1,0 +1,249 @@
+{
+    "Game": {
+        "FPS": {
+            "fps": "FPS: ",
+            "mem": "Memory: ",
+            "memp": "Memory Peak: ",
+            "frame": "Frame Time: "
+        }
+    }, "States": {
+        "Preload": {
+           "text0": "Create \"replays\" distionry",
+           "text1": "Initialized Game ...",
+           "text2": "Loading Global Mods...",
+           "text3": "Loading Mods...",
+           "text4": "Loading Controls...",
+           "text5": "Loading Configs...",
+           "text6": "Loading Score Data...",
+           "text7": "Loading Completed Weeks...",
+           "text8": "Chenk Update..."
+        }, "Menu": {
+            "ver_0": ["To Funkin Engine ", "To Funkin Engine(DEBUG MODE) "],
+            "ver_1": ["Psych Engine v", "Kade Engine v", "MU 2.0.3", "TouHou Project 15"],
+            "ver_2": "Friday Night Funkin' v"
+        }, "Story": {
+            "ws": "WEEK SCORE:",
+            "rank": "RANK:"
+        }, "Free": {
+            "pb": "PERSONAL BEST: ",
+            "cons": ["Press SPACE to listen to Song / Press CTRL to open Gameplay Changers Menu / Press RESET to Reset your Score and Accuracy", "Press SPACE to listen to Song[No Voice] / Press CTRL to open Gameplay Changers Menu / Press RESET to Reset your Score and Accuracy", "Press CTRL to open Gameplay Changers Menu / Press RESET to Reset your Score and Accuracy"],
+            "song_player": {
+                "playing": "PLAYING: ",
+                "pause": "(PAUSED)",
+                "cons": ["Press SPACE to Pause / Press ESCAPE to Exit / Press R to Replay This Song", "Press SPACE to Resume / Press ESCAPE to Exit / Press R to Reset SongPosition"]
+            }
+        }, "awards": {
+            "title": {
+                "a": "Freaky on a Friday Night",
+                "b": "She Calls Me Daddy Too",
+                "c": "No More Tricks",
+                "d": "Call Me The Hitman",
+                "e": "Lady Killer",
+                "f": "Missless Christmas",
+                "g": "Highscore!!",
+                "h": "God Effing Damn It!",
+                "i": "What a Funkin' Disaster!",
+                "j": "Perfectionist",
+                "k": "Roadkill Enthusiast",
+                "l": "Oversinging Much...?",
+                "m": "Hyperactive",
+                "n": "Just the Two of Us",
+                "o": "Toaster Gamer",
+                "p": "Roulette Master",
+                "q": "Debugger",
+                "r": "Happy New Year!"
+            }, "descr": {
+                "a": "Play on a Friday... Night.",
+                "b": "Beat Week 1 on Hard with no Misses.",
+                "c": "Beat Week 2 on Hard with no Misses.",
+                "d": "Beat Week 3 on Hard with no Misses.",
+                "e": "Beat Week 4 on Hard with no Misses.",
+                "f": "Beat Week 5 on Hard with no Misses.",
+                "g": "Beat Week 6 on Hard with no Misses.",
+                "h": "Beat Week 7 on Hard with no Misses.",
+                "i": "Complete a Song with a rating lower than 20%.",
+                "j": "Complete a Song with a rating of 100%.",
+                "k": "Watch the Henchmen die 50 times.",
+                "l": "Hold down a note for 10 seconds.",
+                "m": "Finish a Song without going Idle.",
+                "n": "Finish a Song pressing only two keys.",
+                "o": "Have you tried to run the game on a toaster?",
+                "p": "When the \"Lunatic\" mode is turned on,play any song is completed with the standard of \"FC\" when there is a random is \"InstakillOnMiss\".",
+                "q": "Beat the \"Test\" Stage from the Chart Editor.",
+                "r": "It's new year"
+            }
+        }, "options": {
+            "note_color": {
+                "cons1": "Press RELOAD to Reset the selected Note Part",
+                "cons2": ["Hold ", "Shift", "Left Shoulder Button", " + Press RESET key to fully reset the selected Note"]
+            }, "ADAC": {
+                "opt1": "COMBO OFFSET",
+                "opt2": "NOTE/BEAT DELAY",
+                "pats": ["PRESS ACCEPT TO SWITCH", "PRESS START TO SWITCH"],
+                "ro": "Rating Offset:",
+                "no": "Number Offset:",
+                "co": "Current offset:",
+                "ms": "ms"
+            }, "grap": {
+                "opt1": "If checked, disables some background details,\ndecreases loading times and improves performance.",
+                "opt2": "If unchecked, disables anti-aliasing, increases performance\nat the cost of sharper visuals.",
+                "opt3": "If unchecked, disables shaders.\nIt's used for some visual effects, and aso CPU intensive for weaker PCs.",
+                "opt4": "If unchecked, FPS is like a rainbow",
+                "opt5": "If checked, allows the GPU to be used for caching textures, decreasing RAM usage.\nDon't turn this on if you have a shitty Graphics Card.",
+                "opt6": "Pretty self explanatory, isn't it?",
+                "opt7": "If checked, images loaded will stay in memory\nuntil the game is closed, this increases memory usage,\nbut basically makes reloading times instant.",
+                "opt8": "It's...fullscreen."
+            }, "VAU": {
+                "opt1": "Select your prefered Note skin.",
+                "opt2": "Select your prefered Note Splash variation or turn it off.",
+                "opt3": "How much transparent should the Note Splashes be.",
+                "opt4": "If checked, hides most HUD elements.",
+                "opt5": "If checked, Display \"combo\" when the combo is greater than 10.",
+                "opt6": "If checked, MS will be displayed.",
+                "opt7": "What should the Time Bar display?",
+                "opt8": "Uncheck this if you're sensitive to flashing lights!",
+                "opt9": "If unchecked, the camera won't zoom in on a beat hit.",
+                "opt10": "Check to Engine Style",
+                "opt11": "If unchecked, disables the Score text zooming\neverytime you hit a note.",
+                "opt12": "How much transparent should the health bar and icons be.",
+                "opt13": "If unchecked, hides FPS Counter.",
+                "opt14": "What song do you prefer for the Pause Screen?",
+                "opt15": "On Release builds, turn this on to check for updates when you start the game.",
+                "opt16": "If unchecked, Ratings and Combo won't stack, saving on System Memory and making them easier to read",
+                "opt17": "Changes the Camera Zoom Multiplicative."
+            }, "gameplay": {
+                "opt1": "If checked, notes go Down instead of Up, simple enough.",
+                "opt2": "If checked, your notes get centered.",
+                "opt3": "If checked, listening songs have Voices",
+                "opt4": "If unchecked, opponent notes get hidden.",
+                "opt5": "If checked, you won't get misses from pressing keys\nwhile there are no notes able to be hit.",
+                "opt6": "Select a health mode \n(affects the increase and decrease of blood volume)",
+                "opt7": "If checked, the game automatically pauses if the screen isn't on focus.",
+                "opt8": "If checked, pressing Reset won't do anything.",
+                "opt9": "Funny notes does \"Tick!\" when you hit them.",
+                "opt10": "Changes how late/early you have to hit for a \"Sick!\"\nHigher values mean you have to hit later.",
+                "opt11": "Changes the amount of time you have\nfor hitting a \"Sick!\" in milliseconds.",
+                "opt12": "Changes the amount of time you have\nfor hitting a \"Good\" in milliseconds.",
+                "opt13": "Changes the amount of time you have\nfor hitting a \"Bad\" in milliseconds.",
+                "opt14": "Changes how many frames you have for\nhitting a note earlier or late.",
+                "opt15": "Select a language",
+                "opt16": "Select the fonts that can be used for that language",
+                "opt17": "WARNING! If unchecked, this may result in a language display error!\nUnless you know what you're doing!!",
+                "opt18": "Select \"Hitsound\" Sound File"
+            }, "ES": {
+                "opt1": "If checked...Wait, A blueberry????",
+                "opt2": "If checked, ALL support will be enabled in version 0.6.x",
+                "opt3": "If checked, Game support TABLET or ANDROID",
+                "opt4": "Zoom Modes, Section, Beat or Step",
+                "opt5": "Using System Mouse",
+                "opt6": "Choose Space Control Location",
+                "opt7": "Changes Hitbox Alpha",
+                "opt8": "Changes VirtualPad Alpha"
+            }, "andro": {
+                "button": "Button ",
+                "X": " X:",
+                "Y": " Y:",
+                "arrow": {
+                    "up": "Up",
+                    "down": "Down",
+                    "left": "Left",
+                    "right": "Right"
+                }, "tip": "Press BACK to Go Back to Options Menu"
+            }, "mod": {
+                "not_found": "No description provided.",
+                "mod_name": "Mod Name: ",
+                "errmsg": "An error occurred: "
+            }
+        }, "play": {
+            "sco": "Score: ",
+            "acc": "Accuracy: ",
+            "rat": "Rating: ",
+            "mis": "Misses: ",
+            "com": "Combos: ",
+            "hit": "Hits: ",
+            "hea": "Health: ",
+            "kad": "|",
+            "kam": "Combo Breaks: ",
+            "vab": "Score: Non-number"
+        },"Editor": {
+            "nmdl": "< No Mod Directory Loaded >",
+            "lmd0": "< Loaded Mod Directory: ",
+            "lmd1": " >",
+            "zoom": "Zoom: 1 / 1",
+            "charting": {
+                "NTL": [
+                    "",
+                    "Alt Animation",
+                    "Hey!",
+                    "Hurt Note",
+                    "GF Sing",
+                    "No Animation"
+                ],
+                "EventS": [
+                    ["", "Nothing. Yep, that's right."],
+                    ["Dadbattle Spotlight", "Used in Dad Battle,\nValue 1: 0/1 = ON/OFF,\n2 = Target Dad\n3 = Target BF"],
+                    ["Hey!", "Plays the \"Hey!\" animation from Bopeebo,\nValue 1: BF = Only Boyfriend, GF = Only Girlfriend,\nSomething else = Both.\nValue 2: Custom animation duration,\nleave it blank for 0.6s"],
+                    ["Set GF Speed", "Sets GF head bopping speed,\nValue 1: 1 = Normal speed,\n2 = 1/2 speed, 4 = 1/4 speed etc.\nUsed on Fresh during the beatbox parts.\n\nWarning: Value must be integer!"],
+                    ["Philly Glow", "Exclusive to Week 3\nValue 1: 0/1/2 = OFF/ON/Reset Gradient\n \nNo, i won't add it to other weeks."],
+                    ["Kill Henchmen", "For Mom's songs, don't use this please, i love them :("],
+                    ["Add Camera Zoom", "Used on MILF on that one \"hard\" part\nValue 1: Camera zoom add (Default: 0.015)\nValue 2: UI zoom add (Default: 0.03)\nLeave the values blank if you want to use Default."],
+                    ["BG Freaks Expression", "Should be used only in \"school\" Stage!"],
+                    ["Trigger BG Ghouls", "Should be used only in \"schoolEvil\" Stage!"],
+                    ["Play Animation", "Plays an animation on a Character,\nonce the animation is completed,\nthe animation changes to Idle\n\nValue 1: Animation to play.\nValue 2: Character (Dad, BF, GF)"],
+                    ["Camera Follow Pos", "Value 1: X\nValue 2: Y\n\nThe camera won't change the follow point\nafter using this, for getting it back\nto normal, leave both values blank."],
+                    ["Alt Idle Animation", "Sets a specified suffix after the idle animation name.\nYou can use this to trigger 'idle-alt' if you set\nValue 2 to -alt\n\nValue 1: Character to set (Dad, BF or GF)\nValue 2: New suffix (Leave it blank to disable)"],
+                    ["Screen Shake", "Value 1: Camera shake\nValue 2: HUD shake\n\nEvery value works as the following example: \"1, 0.05\".\nThe first number (1) is the duration.\nThe second number (0.05) is the intensity."],
+                    ["Change Character", "Value 1: Character to change (Dad, BF, GF)\nValue 2: New character's name"],
+                    ["Change Scroll Speed", "Value 1: Scroll Speed Multiplier (1 is default)\nValue 2: Time it takes to change fully in seconds."],
+                    ["Set Property", "Value 1: Variable name\nValue 2: New value"],
+                    ["Play Sound", "Value 1: Sound file name\nValue 2: Volume (Default: 1), ranges from 0 to 1"]
+                ],
+                "tips": {
+                    "tips1": "W/S or Mouse Wheel - Change Conductor's strum time",
+                    "tips2": "\nA/D - Go to the previous/next section",
+                    "tips3": "\nLeft/Right - Change Snap",
+                    "tips4": "\nUp/Down - Change Conductor's Strum Time with Snapping",
+                    "tips4.1": "\nLeft Bracket / Right Bracket - Change Song Playback Rate (SHIFT to go Faster)",
+                    "tips4.2": "\nALT + Left Bracket / Right Bracket - Reset Song Playback Rate",
+                    "tips5": "\nHold Shift to move 4x faster",
+                    "tips6": "\nHold Control and click on an arrow to select it",
+                    "tips7": "\nZ/X - Zoom in/out\n",
+                    "tips8": "\nEsc - Test your chart inside Chart Editor",
+                    "tips9": "\nEnter - Play your chart",
+                    "tips10": "\nQ/E - Decrease/Increase Note Sustain Length",
+                    "tips11": "\nSpace - Stop/Resume song"
+                }, "ui": {
+                    "warning": "This action will clear current progress.\n\nProceed?",
+
+                    "voices": "Has Voices Track",
+                    "ra": "Reload Audio",
+                    "rj": "Reload JSON",
+                    "las": "Load Autosave",
+                    "le": "Load Events",
+                    "se": "Save Events",
+                    "ce": "Clear Events",
+                    "cn": "Clear Notes",
+                    "song": {
+                        "self": "Song ",
+                        "BPM": "BPM:",
+                        "os": "Offset",
+                        "oppon": "Opponent:",
+                        "gf": "Girlfriend:",
+                        "bf": "Boyfriend:",
+                        "st": "Stage:"
+                    },
+                    "section": {
+                        "self": ["Section", "section"],
+                        "MHS": "Must Hit ",
+                        "GFS": "GF ",
+                        "CBPM": "Change BPM",
+                        "CS": "Copy Section",
+                        "PS": "Paste Section",
+                        "Cl": "Clear",
+                        "": ""
+                    }
+                }
+            }
+        }
+    }
+}
