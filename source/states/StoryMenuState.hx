@@ -24,6 +24,7 @@ class StoryMenuState extends MusicBeatState
 
 	var txtWeekTitle:FlxText;
 	var bgSprite:FlxSprite;
+	var rankText:FlxText;
 
 	private static var curWeek:Int = 0;
 
@@ -38,6 +39,7 @@ class StoryMenuState extends MusicBeatState
 	var sprDifficulty:FlxSprite;
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
+	var rakes:String = 'Null';
 
 	var loadedWeeks:Array<WeekData> = [];
 
@@ -52,15 +54,15 @@ class StoryMenuState extends MusicBeatState
 		persistentUpdate = persistentDraw = true;
 
 		scoreText = new FlxText(10, 10, 0, "SCORE: 49324858", 36);
-		scoreText.setFormat("VCR OSD Mono", 32);
+		scoreText.setFormat(Language.fonts(), 32);
 
 		txtWeekTitle = new FlxText(FlxG.width * 0.7, 10, 0, "", 32);
-		txtWeekTitle.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
+		txtWeekTitle.setFormat(Language.fonts(), 32, FlxColor.WHITE, RIGHT);
 		txtWeekTitle.alpha = 0.7;
 
-		var rankText:FlxText = new FlxText(0, 10);
-		rankText.text = 'RANK: GREAT';
-		rankText.setFormat(Paths.font("vcr.ttf"), 32);
+		rankText = new FlxText(0, 10);
+		rankText.text = 'RANK: GREAT(100.00%)';
+		rankText.setFormat(Language.fonts(), 32);
 		rankText.size = scoreText.size;
 		rankText.screenCenter(X);
 
@@ -78,11 +80,6 @@ class StoryMenuState extends MusicBeatState
 
 		grpLocks = new FlxTypedGroup<FlxSprite>();
 		add(grpLocks);
-
-		#if DISCORD_ALLOWED
-		// Updating Discord Rich Presence
-		DiscordClient.changePresence("In the Menus", null);
-		#end
 
 		var num:Int = 0;
 		for (i in 0...WeekData.weeksList.length)
@@ -168,7 +165,7 @@ class StoryMenuState extends MusicBeatState
 		txtTracklist.font = rankText.font;
 		txtTracklist.color = 0xFFe55777;
 		add(txtTracklist);
-		// add(rankText);
+		add(rankText);
 		add(scoreText);
 		add(txtWeekTitle);
 
@@ -187,10 +184,31 @@ class StoryMenuState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		// scoreText.setFormat('VCR OSD Mono', 32);
-		lerpScore = Math.floor(FlxMath.lerp(intendedScore, lerpScore, Math.exp(-elapsed * 30)));
+		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, FlxMath.bound(elapsed * 30, 0, 1)));
+		lerpAcc = Math.abs(FlxMath.roundDecimal(FlxMath.lerp(lerpAcc, intendedAcc, FlxMath.bound(elapsed * 30, 0, 1)), 4));
 		if(Math.abs(intendedScore - lerpScore) < 10) lerpScore = intendedScore;
+		//trace(intendedAcc);
+		//trace(lerpAcc);
 
-		scoreText.text = "WEEK SCORE:" + lerpScore;
+		if(intendedAcc == 1)
+			rakes = 'IMPOSSIBLE!!!';
+		else if(intendedAcc >= 0.9)
+			rakes = 'SICK RANK!!';
+		else if(intendedAcc >= 0.8)
+			rakes = 'GREAT!';
+		else if(intendedAcc >= 0.7)
+			rakes = 'GOOD';
+		else if(intendedAcc >= 0.6)
+			rakes = 'UH OK?';
+		else if(intendedAcc >= 0.4)
+			rakes = 'BAD RANK';
+		else if(intendedAcc >= 0.2)
+			rakes = 'SHIT';
+		else if(intendedAcc >= 0.0)
+			rakes = 'NULL';
+
+		rankText.text = '${language.States.Story.rank}$rakes(${lerpAcc*100}%)';
+		scoreText.text = '${language.States.Story.ws}$lerpScore';
 
 		// FlxG.watch.addQuick('font', scoreText.font);
 
@@ -255,7 +273,10 @@ class StoryMenuState extends MusicBeatState
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			movedBack = true;
-			MusicBeatState.switchState(new MainMenuState());
+			if(ClientPrefs.data.styleEngine == 'MicUp')
+				MusicBeatState.switchState(new PlaySelection());
+			else
+				MusicBeatState.switchState(new MainMenuState());
 		}
 
 		super.update(elapsed);
@@ -325,11 +346,9 @@ class StoryMenuState extends MusicBeatState
 				FreeplayState.destroyFreeplayVocals();
 			});
 			
-			#if (MODS_ALLOWED && DISCORD_ALLOWED)
-			DiscordClient.loadModRPC();
-			#end
+		} else {
+			FlxG.sound.play(Paths.sound('cancelMenu'));
 		}
-		else FlxG.sound.play(Paths.sound('cancelMenu'));
 	}
 
 	var tweenDifficulty:FlxTween;
@@ -366,11 +385,14 @@ class StoryMenuState extends MusicBeatState
 
 		#if !switch
 		intendedScore = Highscore.getWeekScore(loadedWeeks[curWeek].fileName, curDifficulty);
+		intendedAcc = Highscore.getWeekAcc(loadedWeeks[curWeek].fileName, curDifficulty);
 		#end
 	}
 
 	var lerpScore:Int = 0;
+	var lerpAcc:Float = 0.00;
 	var intendedScore:Int = 0;
+	var intendedAcc:Float = 0.00;
 
 	function changeWeek(change:Int = 0):Void
 	{
