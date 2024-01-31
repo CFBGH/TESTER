@@ -2,7 +2,6 @@ package options;
 
 import flixel.input.keyboard.FlxKey;
 import flixel.input.gamepad.FlxGamepadInputID;
-
 import objects.Character;
 
 class ModSettingsSubState extends BaseOptionsMenu
@@ -14,9 +13,7 @@ class ModSettingsSubState extends BaseOptionsMenu
 	{
 		this.folder = folder;
 
-		title = '';
-		//title = name;
-		rpcTitle = 'Mod Settings ($name)'; //for Discord Rich Presence
+		title = 'Mod';
 
 		if(FlxG.save.data.modSettings == null) FlxG.save.data.modSettings = new Map<String, Dynamic>();
 		else
@@ -32,7 +29,7 @@ class ModSettingsSubState extends BaseOptionsMenu
 			{
 				var newOption = new Option(
 					option.name != null ? option.name : option.save,
-					option.description != null ? option.description : 'No description provided.',
+					option.description != null ? option.description : '${language.States.options.mod.not_found}',
 					option.save,
 					option.type,
 					option.options
@@ -127,8 +124,8 @@ class ModSettingsSubState extends BaseOptionsMenu
 		}
 		catch(e:Dynamic)
 		{
-			var errorTitle = 'Mod name: ' + folder;
-			var errorMsg = 'An error occurred: $e';
+			var errorTitle = '${language.States.options.mod.mod_name}$folder';
+			var errorMsg = '${language.States.options.mod.errmsg}$e';
 			#if windows
 			lime.app.Application.current.window.alert(errorMsg, errorTitle);
 			#end
@@ -141,8 +138,8 @@ class ModSettingsSubState extends BaseOptionsMenu
 
 		super();
 
-		bg.alpha = 0.75;
-		bg.color = FlxColor.WHITE;
+		//bg.alpha = 0.75;
+		//bg.color = FlxColor.WHITE;
 		reloadCheckboxes();
 	}
 

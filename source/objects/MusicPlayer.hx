@@ -90,9 +90,9 @@ class MusicPlayer extends FlxGroup
 		}
 
 		if (paused && !wasPlaying)
-			songTxt.text = 'PLAYING: ' + instance.songs[FreeplayState.curSelected].songName + ' (PAUSED)';
+			songTxt.text = '${language.States.Free.song_player.playing}${instance.songs[FreeplayState.curSelected].songName}${language.States.Free.song_player.pause}';
 		else
-			songTxt.text = 'PLAYING: ' + instance.songs[FreeplayState.curSelected].songName;
+			songTxt.text = '${language.States.Free.song_player.playing}${instance.songs[FreeplayState.curSelected].songName}';
 
 		positionSong();
 
@@ -217,6 +217,7 @@ class MusicPlayer extends FlxGroup
 		if (resume)
 		{
 			FlxG.sound.music.resume();
+			instance.bottomText.text = language.States.Free.song_player.cons[0];
 
 			if (FreeplayState.vocals != null)
 				FreeplayState.vocals.resume();
@@ -224,6 +225,7 @@ class MusicPlayer extends FlxGroup
 		else 
 		{
 			FlxG.sound.music.pause();
+			instance.bottomText.text = language.States.Free.song_player.cons[1];
 
 			if (FreeplayState.vocals != null)
 				FreeplayState.vocals.pause();
@@ -249,7 +251,7 @@ class MusicPlayer extends FlxGroup
 
 		if (playingMusic)
 		{
-			instance.bottomText.text = "Press SPACE to Pause / Press ESCAPE to Exit / Press R to Reset the Song";
+			instance.bottomText.text = language.States.Free.song_player.cons[0];
 			positionSong();
 			
 			progressBar.setRange(0, FlxG.sound.music.length);

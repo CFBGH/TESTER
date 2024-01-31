@@ -1,5 +1,7 @@
 package options;
 
+import lib.PathsList;
+
 class GameplaySettingsSubState extends BaseOptionsMenu
 {
 	public function new()
@@ -9,44 +11,79 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 
 		//I'd suggest using "Downscroll" as an example for making your own option since it is the simplest here
 		var option:Option = new Option('Downscroll', //Name
-			'If checked, notes go Down instead of Up, simple enough.', //Description
+		language.States.options.gameplay.opt1, //Description
 			'downScroll', //Save data variable name
 			'bool'); //Variable type
 		addOption(option);
 
 		var option:Option = new Option('Middlescroll',
-			'If checked, your notes get centered.',
+		language.States.options.gameplay.opt2,
 			'middleScroll',
 			'bool');
 		addOption(option);
 
+		var option:Option = new Option('Have Voices',
+		language.States.options.gameplay.opt3,
+			'haveVoices',
+			'bool');
+		addOption(option);
+
 		var option:Option = new Option('Opponent Notes',
-			'If unchecked, opponent notes get hidden.',
+		language.States.options.gameplay.opt4,
 			'opponentStrums',
 			'bool');
 		addOption(option);
 
 		var option:Option = new Option('Ghost Tapping',
-			"If checked, you won't get misses from pressing keys\nwhile there are no notes able to be hit.",
+		language.States.options.gameplay.opt5,
 			'ghostTapping',
 			'bool');
 		addOption(option);
+
+		var option:Option = new Option('Health Mode',
+		language.States.options.gameplay.opt6,
+			'keHealth',
+			'string',
+			['Psych', 'Kade']);
+		addOption(option);
 		
 		var option:Option = new Option('Auto Pause',
-			"If checked, the game automatically pauses if the screen isn't on focus.",
+		language.States.options.gameplay.opt7,
 			'autoPause',
 			'bool');
 		addOption(option);
 		option.onChange = onChangeAutoPause;
 
 		var option:Option = new Option('Disable Reset Button',
-			"If checked, pressing Reset won't do anything.",
+		language.States.options.gameplay.opt8,
 			'noReset',
 			'bool');
 		addOption(option);
 
+		var option:Option = new Option('Language Change',
+		language.States.options.gameplay.opt15,
+			'language',
+			'string',
+			Language.langualist);
+		addOption(option);
+		option.onChange = onChangeLanguage;
+
+		var option:Option = new Option('Fonts Change',
+		language.States.options.gameplay.opt16,
+			'usingfont',
+			'string',
+			Language.fonlist);
+		addOption(option);
+		option.onChange = onChangeLanguage;
+
+		var option:Option = new Option('Fonts Change',
+		language.States.options.gameplay.opt17,
+			'languagefonts',
+			'bool');
+		addOption(option);
+
 		var option:Option = new Option('Hitsound Volume',
-			'Funny notes does \"Tick!\" when you hit them.',
+		language.States.options.gameplay.opt9,
 			'hitsoundVolume',
 			'percent');
 		addOption(option);
@@ -57,8 +94,16 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.decimals = 1;
 		option.onChange = onChangeHitsoundVolume;
 
+		var option:Option = new Option('Hitsound Change',
+		language.States.options.gameplay.opt18,
+			'hitsound',
+			'string',
+			PathsList.hitsoundList());
+		addOption(option);
+		option.onChange = onChangeHitsound;
+
 		var option:Option = new Option('Rating Offset',
-			'Changes how late/early you have to hit for a "Sick!"\nHigher values mean you have to hit later.',
+		language.States.options.gameplay.opt10,
 			'ratingOffset',
 			'int');
 		option.displayFormat = '%vms';
@@ -68,7 +113,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Sick! Hit Window',
-			'Changes the amount of time you have\nfor hitting a "Sick!" in milliseconds.',
+		language.States.options.gameplay.opt11,
 			'sickWindow',
 			'int');
 		option.displayFormat = '%vms';
@@ -78,7 +123,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Good Hit Window',
-			'Changes the amount of time you have\nfor hitting a "Good" in milliseconds.',
+		language.States.options.gameplay.opt12,
 			'goodWindow',
 			'int');
 		option.displayFormat = '%vms';
@@ -88,7 +133,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Bad Hit Window',
-			'Changes the amount of time you have\nfor hitting a "Bad" in milliseconds.',
+		language.States.options.gameplay.opt13,
 			'badWindow',
 			'int');
 		option.displayFormat = '%vms';
@@ -98,7 +143,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Safe Frames',
-			'Changes how many frames you have for\nhitting a note earlier or late.',
+		language.States.options.gameplay.opt14,
 			'safeFrames',
 			'float');
 		option.scrollSpeed = 5;
@@ -107,18 +152,26 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.changeValue = 0.1;
 		addOption(option);
 
-		var option:Option = new Option('Sustains as One Note',
-			"If checked, Hold Notes can't be pressed if you miss,\nand count as a single Hit/Miss.\nUncheck this if you prefer the old Input System.",
-			'guitarHeroSustains',
-			'bool');
-		addOption(option);
-
 		super();
 	}
 
 	function onChangeHitsoundVolume()
-		FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.data.hitsoundVolume);
+	{
+		FlxG.sound.play(Paths.sound('hitsounds/${ClientPrefs.data.hitsound}'), ClientPrefs.data.hitsoundVolume);
+	}
+
+	function onChangeHitsound() {
+		ClientPrefs.saveSettings();
+		FlxG.sound.play(Paths.sound('hitsounds/${ClientPrefs.data.hitsound}'), ClientPrefs.data.hitsoundVolume);
+	}
 
 	function onChangeAutoPause()
+	{
 		FlxG.autoPause = ClientPrefs.data.autoPause;
+	}
+
+	function onChangeLanguage() {
+		ClientPrefs.saveSettings();
+		Language.init();
+	}
 }

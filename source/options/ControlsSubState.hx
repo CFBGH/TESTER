@@ -64,10 +64,6 @@ class ControlsSubState extends MusicBeatSubstate
 	{
 		super();
 
-		#if DISCORD_ALLOWED
-		DiscordClient.changePresence("Controls Menu", null);
-		#end
-
 		options.push([true]);
 		options.push([true]);
 		options.push([true, defaultKey]);
@@ -110,6 +106,13 @@ class ControlsSubState extends MusicBeatSubstate
 		add(text);
 
 		createTexts();
+
+		#if android
+		addVirtualPad(FULL, A_B);
+		#else
+		if(ClientPrefs.data.tabletmode)
+			addVirtualPad(FULL, A_B);
+		#end
 	}
 
 	var lastID:Int = 0;
@@ -266,6 +269,7 @@ class ControlsSubState extends MusicBeatSubstate
 	var timeForMoving:Float = 0.1;
 	override function update(elapsed:Float)
 	{
+		var isTab = ClientPrefs.data.tabletmode;
 		if(timeForMoving > 0) //Fix controller bug
 		{
 			timeForMoving = Math.max(0, timeForMoving - elapsed);
@@ -275,26 +279,29 @@ class ControlsSubState extends MusicBeatSubstate
 
 		if(!binding)
 		{
-			if(FlxG.keys.justPressed.ESCAPE || FlxG.gamepads.anyJustPressed(B))
+			if(FlxG.keys.justPressed.ESCAPE || FlxG.gamepads.anyJustPressed(B) || (isTab && MusicBeatSubstate._virtualpad.buttonB.justPressed))
 			{
+				#if android
+				FlxTransitionableState.skipNextTransOut = true;
+				FlxG.resetState();
+				#else
 				close();
+				#end
 				return;
 			}
-			if(FlxG.keys.justPressed.CONTROL || FlxG.gamepads.anyJustPressed(LEFT_SHOULDER) || FlxG.gamepads.anyJustPressed(RIGHT_SHOULDER)) swapMode();
+			if(FlxG.keys.justPressed.CONTROL  || (isTab && MusicBeatSubstate._virtualpad.buttonC.justPressed) || FlxG.gamepads.anyJustPressed(LEFT_SHOULDER) || FlxG.gamepads.anyJustPressed(RIGHT_SHOULDER)) swapMode();
 
-			if(FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT || FlxG.gamepads.anyJustPressed(DPAD_LEFT) || FlxG.gamepads.anyJustPressed(DPAD_RIGHT) ||
+			if(FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT || (isTab && MusicBeatSubstate._virtualpad.buttonLeft.justPressed) || (isTab && MusicBeatSubstate._virtualpad.buttonRight.justPressed) || FlxG.gamepads.anyJustPressed(DPAD_LEFT) || FlxG.gamepads.anyJustPressed(DPAD_RIGHT) ||
 				FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_LEFT) || FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_RIGHT)) updateAlt(true);
 
-			if(FlxG.keys.justPressed.UP || FlxG.gamepads.anyJustPressed(DPAD_UP) || FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_UP)) updateText(-1);
-			else if(FlxG.keys.justPressed.DOWN || FlxG.gamepads.anyJustPressed(DPAD_DOWN) || FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_DOWN)) updateText(1);
+			if(FlxG.keys.justPressed.UP || (isTab && MusicBeatSubstate._virtualpad.buttonUp.justPressed) || FlxG.gamepads.anyJustPressed(DPAD_UP) || FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_UP)) updateText(-1);
+			else if(FlxG.keys.justPressed.DOWN || (isTab && MusicBeatSubstate._virtualpad.buttonDown.justPressed) || FlxG.gamepads.anyJustPressed(DPAD_DOWN) || FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_DOWN)) updateText(1);
 
-			if(FlxG.keys.justPressed.ENTER || FlxG.gamepads.anyJustPressed(START) || FlxG.gamepads.anyJustPressed(A))
+			if(FlxG.keys.justPressed.ENTER || (isTab && MusicBeatSubstate._virtualpad.buttonA.justPressed) || FlxG.gamepads.anyJustPressed(START) || FlxG.gamepads.anyJustPressed(A))
 			{
 				if(options[curOptions[curSelected]][1] != defaultKey)
 				{
-					bindingBlack = new FlxSprite().makeGraphic(1, 1, /*FlxColor.BLACK*/ FlxColor.WHITE);
-					bindingBlack.scale.set(FlxG.width, FlxG.height);
-					bindingBlack.updateHitbox();
+					bindingBlack = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, /*FlxColor.BLACK*/ FlxColor.WHITE);
 					bindingBlack.alpha = 0;
 					FlxTween.tween(bindingBlack, {alpha: 0.6}, 0.35, {ease: FlxEase.linear});
 					add(bindingBlack);
@@ -329,7 +336,7 @@ class ControlsSubState extends MusicBeatSubstate
 		{
 			var altNum:Int = curAlt ? 1 : 0;
 			var curOption:Array<Dynamic> = options[curOptions[curSelected]];
-			if(FlxG.keys.pressed.ESCAPE || FlxG.gamepads.anyPressed(B))
+			if(FlxG.keys.pressed.ESCAPE || (isTab && MusicBeatSubstate._virtualpad.buttonB.justPressed) || FlxG.gamepads.anyPressed(B))
 			{
 				holdingEsc += elapsed;
 				if(holdingEsc > 0.5)

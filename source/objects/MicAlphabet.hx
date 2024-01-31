@@ -1,25 +1,33 @@
 package objects;
 
-enum Alignment
+import flixel.math.FlxPoint;
+
+enum MicAlignment
 {
 	LEFT;
 	CENTERED;
 	RIGHT;
 }
 
-class Alphabet extends FlxSpriteGroup
+class MicAlphabet extends FlxSpriteGroup
 {
 	public var text(default, set):String;
 
 	public var bold:Bool = false;
-	public var letters:Array<AlphaCharacter> = [];
+
+	public var cShaped:Bool = false;
+
+	public var letters:Array<MicAlphaCharacter> = [];
 
 	public var isMenuItem:Bool = false;
 	public var targetY:Int = 0;
+	public var targetX:Int = 0;
 	public var changeX:Bool = true;
 	public var changeY:Bool = true;
 
-	public var alignment(default, set):Alignment = LEFT;
+	public var itemType:String = "";
+
+	public var alignment(default, set):MicAlignment = LEFT;
 	public var scaleX(default, set):Float = 1;
 	public var scaleY(default, set):Float = 1;
 	public var rows:Int = 0;
@@ -50,7 +58,7 @@ class Alphabet extends FlxSpriteGroup
 		}
 	}
 
-	private function set_alignment(align:Alignment)
+	private function set_alignment(align:MicAlignment)
 	{
 		alignment = align;
 		updateAlignment();
@@ -94,7 +102,7 @@ class Alphabet extends FlxSpriteGroup
 		while (i > 0)
 		{
 			--i;
-			var letter:AlphaCharacter = letters[i];
+			var letter:MicAlphaCharacter = letters[i];
 			if(letter != null)
 			{
 				letter.kill();
@@ -161,6 +169,7 @@ class Alphabet extends FlxSpriteGroup
 
 	override function update(elapsed:Float)
 	{
+		var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
 		if (isMenuItem)
 		{
 			var lerpVal:Float = FlxMath.bound(elapsed * 9.6, 0, 1);
@@ -169,6 +178,7 @@ class Alphabet extends FlxSpriteGroup
 			if(changeY)
 				y = FlxMath.lerp(y, (targetY * 1.3 * distancePerItem.y) + startPosition.y, lerpVal);
 		}
+
 		super.update(elapsed);
 	}
 
@@ -200,13 +210,12 @@ class Alphabet extends FlxSpriteGroup
 				var spaceChar:Bool = (character == " " || (bold && character == "_"));
 				if (spaceChar) consecutiveSpaces++;
 
-				var isAlphabet:Bool = AlphaCharacter.isTypeAlphabet(character.toLowerCase());
-				if (AlphaCharacter.allLetters.exists(character.toLowerCase()) && (!bold || !spaceChar))
+				var isAlphabet:Bool = MicAlphaCharacter.isTypeAlphabet(character.toLowerCase());
+				if (MicAlphaCharacter.allLetters.exists(character.toLowerCase()) && (!bold || !spaceChar))
 				{
 					if (consecutiveSpaces > 0)
 					{
 						xPos += 28 * consecutiveSpaces * scaleX;
-						rowData[rows] = xPos;
 						if(!bold && xPos >= FlxG.width * 0.65)
 						{
 							xPos = 0;
@@ -215,10 +224,9 @@ class Alphabet extends FlxSpriteGroup
 					}
 					consecutiveSpaces = 0;
 
-					var letter:AlphaCharacter = cast recycle(AlphaCharacter, true);
+					var letter:MicAlphaCharacter = cast recycle(MicAlphaCharacter, true);
 					letter.scale.x = scaleX;
 					letter.scale.y = scaleY;
-					letter.rowWidth = 0;
 
 					letter.setupAlphaCharacter(xPos, rows * Y_PER_ROW * scale.y, character, bold);
 					@:privateAccess letter.parent = this;
@@ -260,13 +268,13 @@ class Alphabet extends FlxSpriteGroup
 	NUMBER_OR_SYMBOL;
 }*/
 
-typedef Letter = {
+typedef MicLetter = {
 	?anim:Null<String>,
 	?offsets:Array<Float>,
 	?offsetsBold:Array<Float>
 }
 
-class AlphaCharacter extends FlxSprite
+class MicAlphaCharacter extends FlxSprite
 {
 	//public static var alphabet:String = "abcdefghijklmnopqrstuvwxyz";
 	//public static var numbers:String = "1234567890";
@@ -274,7 +282,7 @@ class AlphaCharacter extends FlxSprite
 
 	public var image(default, set):String;
 
-	public static var allLetters:Map<String, Null<Letter>> = [
+	public static var allLetters:Map<String, Null<MicLetter>> = [
 		//alphabet
 		'a'  => null, 'b'  => null, 'c'  => null, 'd'  => null, 'e'  => null, 'f'  => null,
 		'g'  => null, 'h'  => null, 'i'  => null, 'j'  => null, 'k'  => null, 'l'  => null,
@@ -335,7 +343,7 @@ class AlphaCharacter extends FlxSprite
 		'•'  => {anim: 'bullet', offsets: [0, 18], offsetsBold: [0, 20]}
 	];
 
-	var parent:Alphabet;
+	var parent:MicAlphabet;
 	public var alignOffset:Float = 0; //Don't change this
 	public var letterOffset:Array<Float> = [0, 0];
 
@@ -349,7 +357,7 @@ class AlphaCharacter extends FlxSprite
 		antialiasing = ClientPrefs.data.antialiasing;
 	}
 	
-	public var curLetter:Letter = null;
+	public var curLetter:MicLetter = null;
 	public function setupAlphaCharacter(x:Float, y:Float, ?character:String = null, ?bold:Null<Bool> = null)
 	{
 		this.x = x;

@@ -50,10 +50,6 @@ class NotesSubState extends MusicBeatSubstate
 	public function new() {
 		super();
 		
-		#if DISCORD_ALLOWED
-		DiscordClient.changePresence("Note Colors Menu", null);
-		#end
-		
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.color = 0xFFEA71FD;
 		bg.screenCenter();
@@ -146,13 +142,13 @@ class NotesSubState extends MusicBeatSubstate
 
 		var tipX = 20;
 		var tipY = 660;
-		var tip:FlxText = new FlxText(tipX, tipY, 0, "Press RELOAD to Reset the selected Note Part.", 16);
-		tip.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		var tip:FlxText = new FlxText(tipX, tipY, 0, language.States.options.note_color.cons1, 16);
+		tip.setFormat(Language.fonts(), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		tip.borderSize = 2;
 		add(tip);
 
 		tipTxt = new FlxText(tipX, tipY + 24, 0, '', 16);
-		tipTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		tipTxt.setFormat(Language.fonts(), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		tipTxt.borderSize = 2;
 		add(tipTxt);
 		updateTip();
@@ -169,9 +165,7 @@ class NotesSubState extends MusicBeatSubstate
 	}
 
 	function updateTip()
-	{
-		tipTxt.text = 'Hold ' + (!controls.controllerMode ? 'Shift' : 'Left Shoulder Button') + ' + Press RESET key to fully reset the selected Note.';
-	}
+		tipTxt.text = '${language.States.options.note_color.cons2[0]}${(!controls.controllerMode ? ${language.States.options.note_color.cons2[1]} : ${language.States.options.note_color.cons2[2]})}${language.States.options.note_color.cons2[3]}';
 
 	var _storedColor:FlxColor;
 	var changingNote:Bool = false;

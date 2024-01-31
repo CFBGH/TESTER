@@ -180,6 +180,23 @@ class ReflectionFunctions
 			}
 			else FunkinLua.luaTrace('addInstance: Can\'t add what doesn\'t exist~ ($objectName)', false, false, FlxColor.RED);
 		});
+
+		Lua_helper.add_callback(lua, "addInstance", function(objectName:String, ?inFront:Bool = false) {
+			if(PlayState.instance.variables.exists(objectName))
+			{
+				var obj:Dynamic = PlayState.instance.variables.get(objectName);
+				if (inFront)
+					LuaUtils.getTargetInstance().add(obj);
+				else
+				{
+					if(!PlayState.instance.isDead)
+						PlayState.instance.insert(PlayState.instance.members.indexOf(LuaUtils.getLowestCharacterGroup()), obj);
+					else
+						GameOverSubstate.instance.insert(GameOverSubstate.instance.members.indexOf(GameOverSubstate.instance.boyfriend), obj);
+				}
+			}
+			else FunkinLua.luaTrace('addInstance: Can\'t add what doesn\'t exist~ ($objectName)', false, false, FlxColor.RED);
+		});
 		Lua_helper.add_callback(lua, "instanceArg", function(instanceName:String, ?className:String = null) {
 			var retStr:String ='$instanceStr::$instanceName';
 			if(className != null) retStr += '::$className';

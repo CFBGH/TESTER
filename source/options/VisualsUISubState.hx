@@ -32,11 +32,11 @@ class VisualsUISubState extends BaseOptionsMenu
 		if(noteSkins.length > 0)
 		{
 			if(!noteSkins.contains(ClientPrefs.data.noteSkin))
-				ClientPrefs.data.noteSkin = ClientPrefs.defaultData.noteSkin; //Reset to default if saved noteskin couldnt be found
+				ClientPrefs.data.noteSkin = 'Default'; //Reset to default if saved noteskin couldnt be found
 
-			noteSkins.insert(0, ClientPrefs.defaultData.noteSkin); //Default skin always comes first
+			noteSkins.insert(0, 'Default'); //Default skin always comes first
 			var option:Option = new Option('Note Skins:',
-				"Select your prefered Note skin.",
+			language.States.options.VAU.opt1,
 				'noteSkin',
 				'string',
 				noteSkins);
@@ -53,7 +53,7 @@ class VisualsUISubState extends BaseOptionsMenu
 
 			noteSplashes.insert(0, ClientPrefs.defaultData.splashSkin); //Default skin always comes first
 			var option:Option = new Option('Note Splashes:',
-				"Select your prefered Note Splash variation or turn it off.",
+			language.States.options.VAU.opt2,
 				'splashSkin',
 				'string',
 				noteSplashes);
@@ -61,7 +61,7 @@ class VisualsUISubState extends BaseOptionsMenu
 		}
 
 		var option:Option = new Option('Note Splash Opacity',
-			'How much transparent should the Note Splashes be.',
+		language.States.options.VAU.opt3,
 			'splashAlpha',
 			'percent');
 		option.scrollSpeed = 1.6;
@@ -72,38 +72,55 @@ class VisualsUISubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Hide HUD',
-			'If checked, hides most HUD elements.',
+		language.States.options.VAU.opt4,
 			'hideHud',
 			'bool');
 		addOption(option);
-		
+
+		var option:Option = new Option('Combo Display',
+		language.States.options.VAU.opt5,
+			'comboDis',
+			'bool');
+		addOption(option);
+
+		var option:Option = new Option('MS display',
+		language.States.options.VAU.opt6,
+			'msDisplay',
+			'bool');
+		addOption(option);		
 		var option:Option = new Option('Time Bar:',
-			"What should the Time Bar display?",
+		language.States.options.VAU.opt7,
 			'timeBarType',
 			'string',
 			['Time Left', 'Time Elapsed', 'Song Name', 'Disabled']);
 		addOption(option);
 
 		var option:Option = new Option('Flashing Lights',
-			"Uncheck this if you're sensitive to flashing lights!",
+		language.States.options.VAU.opt8,
 			'flashing',
 			'bool');
 		addOption(option);
 
 		var option:Option = new Option('Camera Zooms',
-			"If unchecked, the camera won't zoom in on a beat hit.",
+		language.States.options.VAU.opt9,
 			'camZooms',
 			'bool');
 		addOption(option);
 
+		var option:Option = new Option('Engine style',
+		language.States.options.VAU.opt10,
+			'styleEngine', 'string',
+			['Psych', 'Kade', 'Vanilla', 'MicUp'/*, 'Touhou'*/]);
+		addOption(option);
+
 		var option:Option = new Option('Score Text Zoom on Hit',
-			"If unchecked, disables the Score text zooming\neverytime you hit a note.",
+		language.States.options.VAU.opt11,
 			'scoreZoom',
 			'bool');
 		addOption(option);
 
 		var option:Option = new Option('Health Bar Opacity',
-			'How much transparent should the health bar and icons be.',
+		language.States.options.VAU.opt12,
 			'healthBarAlpha',
 			'percent');
 		option.scrollSpeed = 1.6;
@@ -115,7 +132,7 @@ class VisualsUISubState extends BaseOptionsMenu
 		
 		#if !mobile
 		var option:Option = new Option('FPS Counter',
-			'If unchecked, hides FPS Counter.',
+		language.States.options.VAU.opt13,
 			'showFPS',
 			'bool');
 		addOption(option);
@@ -123,7 +140,7 @@ class VisualsUISubState extends BaseOptionsMenu
 		#end
 		
 		var option:Option = new Option('Pause Screen Song:',
-			"What song do you prefer for the Pause Screen?",
+		language.States.options.VAU.opt14,
 			'pauseMusic',
 			'string',
 			['None', 'Breakfast', 'Tea Time']);
@@ -132,24 +149,24 @@ class VisualsUISubState extends BaseOptionsMenu
 		
 		#if CHECK_FOR_UPDATES
 		var option:Option = new Option('Check for Updates',
-			'On Release builds, turn this on to check for updates when you start the game.',
+		language.States.options.VAU.opt15,
 			'checkForUpdates',
 			'bool');
 		addOption(option);
 		#end
 
-		#if DISCORD_ALLOWED
-		var option:Option = new Option('Discord Rich Presence',
-			"Uncheck this to prevent accidental leaks, it will hide the Application from your \"Playing\" box on Discord",
-			'discordRPC',
-			'bool');
-		addOption(option);
-		#end
-
 		var option:Option = new Option('Combo Stacking',
-			"If unchecked, Ratings and Combo won't stack, saving on System Memory and making them easier to read",
+		language.States.options.VAU.opt16,
 			'comboStacking',
 			'bool');
+		addOption(option);
+
+		var option:Option = new Option('Camera Zooming Mult', language.States.options.VAU.opt17, 'camZoomingMult', 'float');
+		option.displayFormat = '%vx';
+		option.scrollSpeed = 5;
+		option.minValue = 0.5;
+		option.maxValue = 3;
+		option.changeValue = 0.1;
 		addOption(option);
 
 		super();
@@ -206,7 +223,14 @@ class VisualsUISubState extends BaseOptionsMenu
 
 	override function destroy()
 	{
-		if(changedMusic && !OptionsState.onPlayState) FlxG.sound.playMusic(Paths.music('freakyMenu'), 1, true);
+		if(changedMusic && !OptionsState.onPlayState){
+			if(ClientPrefs.data.styleEngine == 'Kade')
+				FlxG.sound.playMusic(Paths.music('freakyMenuKE'), 1, true);
+			else if(ClientPrefs.data.styleEngine == 'TouHou')
+				FlxG.sound.playMusic(Paths.music('freakyMenuTH'), 1, true);
+			else
+				FlxG.sound.playMusic(Paths.music('freakyMenu'), 1, true);
+		}
 		super.destroy();
 	}
 

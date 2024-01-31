@@ -37,12 +37,8 @@ class NoteOffsetState extends MusicBeatState
 
 	override public function create()
 	{
-		#if DISCORD_ALLOWED
-		DiscordClient.changePresence("Delay/Combo Offset Menu", null);
-		#end
-
 		// Cameras
-		camGame = initPsychCamera();
+		camGame = new FlxCamera();
 
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
@@ -52,6 +48,7 @@ class NoteOffsetState extends MusicBeatState
 		camOther.bgColor.alpha = 0;
 		FlxG.cameras.add(camOther, false);
 
+		CustomFadeTransition.nextCamera = camOther;
 		FlxG.camera.scroll.set(120, 130);
 
 		persistentUpdate = true;
@@ -124,7 +121,7 @@ class NoteOffsetState extends MusicBeatState
 		add(beatText);
 		
 		timeTxt = new FlxText(0, 600, FlxG.width, "", 32);
-		timeTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		timeTxt.setFormat(Language.fonts(), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		timeTxt.scrollFactor.set();
 		timeTxt.borderSize = 2;
 		timeTxt.visible = false;
@@ -152,7 +149,7 @@ class NoteOffsetState extends MusicBeatState
 		add(blackBox);
 
 		changeModeText = new FlxText(0, 4, FlxG.width, "", 32);
-		changeModeText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER);
+		changeModeText.setFormat(Language.fonts(), 32, FlxColor.WHITE, CENTER);
 		changeModeText.scrollFactor.set();
 		changeModeText.cameras = [camHUD];
 		add(changeModeText);
@@ -405,6 +402,7 @@ class NoteOffsetState extends MusicBeatState
 			if(beatTween != null) beatTween.cancel();
 
 			persistentUpdate = false;
+			CustomFadeTransition.nextCamera = camOther;
 			MusicBeatState.switchState(new options.OptionsState());
 			if(OptionsState.onPlayState)
 			{
@@ -480,7 +478,7 @@ class NoteOffsetState extends MusicBeatState
 		for (i in 0...4)
 		{
 			var text:FlxText = new FlxText(10, 48 + (i * 30), 0, '', 24);
-			text.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			text.setFormat(Language.fonts(), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			text.scrollFactor.set();
 			text.borderSize = 2;
 			dumbTexts.add(text);
@@ -499,9 +497,9 @@ class NoteOffsetState extends MusicBeatState
 		{
 			switch(i)
 			{
-				case 0: dumbTexts.members[i].text = 'Rating Offset:';
+				case 0: dumbTexts.members[i].text = '${language.States.options.ADAC.ro}';
 				case 1: dumbTexts.members[i].text = '[' + ClientPrefs.data.comboOffset[0] + ', ' + ClientPrefs.data.comboOffset[1] + ']';
-				case 2: dumbTexts.members[i].text = 'Numbers Offset:';
+				case 2: dumbTexts.members[i].text = '${language.States.options.ADAC.no}';
 				case 3: dumbTexts.members[i].text = '[' + ClientPrefs.data.comboOffset[2] + ', ' + ClientPrefs.data.comboOffset[3] + ']';
 			}
 		}
@@ -510,7 +508,7 @@ class NoteOffsetState extends MusicBeatState
 	function updateNoteDelay()
 	{
 		ClientPrefs.data.noteOffset = Math.round(barPercent);
-		timeTxt.text = 'Current offset: ' + Math.floor(barPercent) + ' ms';
+		timeTxt.text = '${language.States.options.ADAC.co}${Math.floor(barPercent)}${language.States.options.ADAC.ms}';
 	}
 
 	function updateMode()
@@ -534,14 +532,14 @@ class NoteOffsetState extends MusicBeatState
 		var str:String;
 		var str2:String;
 		if(onComboMenu)
-			str = 'Combo Offset';
+			str = '${language.States.options.ADAC.opt1}';
 		else
-			str = 'Note/Beat Delay';
+			str = '${language.States.options.ADAC.opt2}';
 
 		if(!controls.controllerMode)
-			str2 = '(Press Accept to Switch)';
+			str2 = '(${language.States.options.ADAC.pats[0]})';
 		else
-			str2 = '(Press Start to Switch)';
+			str2 = '(${language.States.options.ADAC.pats[1]})';
 
 		changeModeText.text = '< ${str.toUpperCase()} ${str2.toUpperCase()} >';
 	}

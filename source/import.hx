@@ -1,14 +1,12 @@
 #if !macro
-//Discord API
-#if DISCORD_ALLOWED
-import backend.Discord;
-#end
-
 //Psych
 #if LUA_ALLOWED
 import llua.*;
 import llua.Lua;
 #end
+
+//Language using
+import haxe.Json;
 
 #if ACHIEVEMENTS_ALLOWED
 import backend.Achievements;
@@ -32,9 +30,12 @@ import backend.Conductor;
 import backend.BaseStage;
 import backend.Difficulty;
 import backend.Mods;
+import lib.Language.language;
+import lib.Language;
 
 import objects.Alphabet;
 import objects.BGSprite;
+import objects.MicAlphabet;
 
 import states.PlayState;
 import states.LoadingState;
@@ -44,19 +45,23 @@ import flxanimate.*;
 #end
 
 //Flixel
-import flixel.sound.FlxSound;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
+import flixel.text.FlxText;
+import flixel.util.FlxAxes;
 import flixel.math.FlxMath;
+import flixel.util.FlxTimer;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
-import flixel.util.FlxTimer;
-import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
+import flixel.sound.FlxSound;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxGradient;
 import flixel.group.FlxSpriteGroup;
+import flixel.addons.display.FlxBackdrop;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.addons.display.FlxGridOverlay;
 
 using StringTools;
 #end

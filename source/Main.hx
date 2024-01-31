@@ -16,7 +16,8 @@ import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.display.StageScaleMode;
 import lime.app.Application;
-import states.TitleState;
+
+import states.PreloadState;
 
 #if linux
 import lime.graphics.Image;
@@ -31,9 +32,7 @@ import haxe.io.Path;
 
 #if linux
 @:cppInclude('./external/gamemode_client.h')
-@:cppFileCode('
-	#define GAMEMODE_AUTO
-')
+@:cppFileCode('#define GAMEMODE_AUTO')
 #end
 
 class Main extends Sprite
@@ -41,13 +40,22 @@ class Main extends Sprite
 	var game = {
 		width: 1280, // WINDOW width
 		height: 720, // WINDOW height
-		initialState: TitleState, // initial game state
+		initialState: PreloadState, // initial game state
 		zoom: -1.0, // game state bounds
 		framerate: 60, // default framerate
-		skipSplash: true, // if the default flixel splash screen should be skipped
+		skipSplash: false, // if the default flixel splash screen should be skipped
 		startFullscreen: false // if the game should start at fullscreen mode
 	};
 
+	public static var MainInfos:Array<String> = [
+		'ToFunkinEngine',
+		'com.comesfromback.tofunkinengine',
+		'Comes_FromBack',
+		'621',
+	];
+
+	public static var BETA_Version = '(BETA 2024131_072h-05)';
+	public static var MAIN_Version = 'To Funkin Engine v1.0';
 	public static var fpsVar:FPSCounter;
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
@@ -101,7 +109,6 @@ class Main extends Sprite
 			game.width = Math.ceil(stageWidth / game.zoom);
 			game.height = Math.ceil(stageHeight / game.zoom);
 		}
-	
 		#if LUA_ALLOWED Lua.set_callbacks_function(cpp.Callable.fromStaticFunction(psychlua.CallbackHandler.call)); #end
 		Controls.instance = new Controls();
 		ClientPrefs.loadDefaultKeys();
@@ -132,21 +139,18 @@ class Main extends Sprite
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 		#end
 
-		#if DISCORD_ALLOWED
-		DiscordClient.prepare();
-		#end
-
 		// shader coords fix
 		FlxG.signals.gameResized.add(function (w, h) {
 		     if (FlxG.cameras != null) {
 			   for (cam in FlxG.cameras.list) {
-				if (cam != null && cam.filters != null)
+				@:privateAccess
+				if (cam != null && cam._filters != null)
 					resetSpriteCache(cam.flashSprite);
 			   }
-			}
+		     }
 
-			if (FlxG.game != null)
-			resetSpriteCache(FlxG.game);
+		     if (FlxG.game != null)
+			 resetSpriteCache(FlxG.game);
 		});
 	}
 
@@ -170,7 +174,7 @@ class Main extends Sprite
 		dateNow = dateNow.replace(" ", "_");
 		dateNow = dateNow.replace(":", "'");
 
-		path = "./crash/" + "PsychEngine_" + dateNow + ".txt";
+		path = "./crash/" + "ToFunkinEngine_" + dateNow + ".txt";
 
 		for (stackItem in callStack)
 		{
@@ -194,9 +198,6 @@ class Main extends Sprite
 		Sys.println("Crash dump saved in " + Path.normalize(path));
 
 		Application.current.window.alert(errMsg, "Error!");
-		#if DISCORD_ALLOWED
-		DiscordClient.shutdown();
-		#end
 		Sys.exit(1);
 	}
 	#end

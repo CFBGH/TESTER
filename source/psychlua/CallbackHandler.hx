@@ -1,4 +1,3 @@
-#if LUA_ALLOWED
 package psychlua;
 
 class CallbackHandler
@@ -59,4 +58,3 @@ class CallbackHandler
 		return 0;
 	}
 }
-#end

@@ -5,7 +5,7 @@ import backend.StageData;
 
 class OptionsState extends MusicBeatState
 {
-	var options:Array<String> = ['Note Colors', 'Controls', 'Adjust Delay and Combo', 'Graphics', 'Visuals and UI', 'Gameplay'];
+	var options:Array<String> = ['Note Colors', 'Controls', 'Adjust Delay and Combo', 'Graphics', 'Visuals and UI', 'Gameplay', 'Extra Setting'];
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private static var curSelected:Int = 0;
 	public static var menuBG:FlxSprite;
@@ -25,6 +25,8 @@ class OptionsState extends MusicBeatState
 				openSubState(new options.GameplaySettingsSubState());
 			case 'Adjust Delay and Combo':
 				MusicBeatState.switchState(new options.NoteOffsetState());
+			case 'Extra Setting':
+				openSubState(new options.ExtraSettingsSubState());
 		}
 	}
 
@@ -32,9 +34,8 @@ class OptionsState extends MusicBeatState
 	var selectorRight:Alphabet;
 
 	override function create() {
-		#if DISCORD_ALLOWED
-		DiscordClient.changePresence("Options Menu", null);
-		#end
+		Language.init();
+		if(ClientPrefs.data.tabletmode) ClientPrefs.debug.tab = true; else ClientPrefs.debug.tab = false; 
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.antialiasing = ClientPrefs.data.antialiasing;
@@ -63,28 +64,58 @@ class OptionsState extends MusicBeatState
 		changeSelection();
 		ClientPrefs.saveSettings();
 
+		#if android
+		addVirtualPad(UP_DOWN, A_B_E);
+		#else
+		if(ClientPrefs.data.tabletmode)
+			addVirtualPad(UP_DOWN, A_B_E);
+		#end
+
 		super.create();
 	}
 
 	override function closeSubState() {
 		super.closeSubState();
 		ClientPrefs.saveSettings();
-		#if DISCORD_ALLOWED
-		DiscordClient.changePresence("Options Menu", null);
-		#end
 	}
 
 	override function update(elapsed:Float) {
+		var isTab:Bool = ClientPrefs.debug.tab;
 		super.update(elapsed);
 
-		if (controls.UI_UP_P) {
+		if (controls.UI_UP_P || (isTab && MusicBeatState._virtualpad.buttonUp.justPressed))
 			changeSelection(-1);
-		}
-		if (controls.UI_DOWN_P) {
+		if (controls.UI_DOWN_P || (isTab && MusicBeatState._virtualpad.buttonDown.justPressed))
 			changeSelection(1);
+
+		if(FlxG.mouse.wheel != 0)
+			changeSelection(-FlxG.mouse.wheel);
+
+		if(!ClientPrefs.debug.debugMode) {
+			if(FlxG.keys.justPressed.D && FlxG.keys.justPressed.B) {
+				FlxG.sound.play(Paths.sound('confirmMenu'));
+				FlxG.camera.flash(0x00FF00, 0.4, null, true);
+				trace('Debug Mode is ON!');
+				ClientPrefs.debug.debugMode = true;
+				ClientPrefs.saveSettings();
+			}
+		} else {
+			if(FlxG.keys.justPressed.R && FlxG.keys.justPressed.D) {
+				FlxG.sound.play(Paths.sound('confirmMenu'));
+				FlxG.camera.flash(0xFFFF0000, 0.4, null, true);
+				trace('Debug Mode is OFF!');
+				ClientPrefs.debug.debugMode = false;
+				ClientPrefs.saveSettings();
+			}
 		}
 
-		if (controls.BACK) {
+		if((isTab && MusicBeatState._virtualpad.buttonE.justPressed) || (ClientPrefs.debug.debugMode && FlxG.keys.justPressed.A))
+			MusicBeatState.switchState(new options.AndroidControlsMenu());
+
+		/*if(ClientPrefs.debug.debugMode && FlxG.keys.justPressed.M)
+			MusicBeatState.switchState(new ModSettingsSubState());*/
+
+		if (controls.BACK || (isTab && MusicBeatState._virtualpad.buttonB.justPressed) || FlxG.mouse.justPressedRight) {
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			if(onPlayState)
 			{
@@ -94,7 +125,7 @@ class OptionsState extends MusicBeatState
 			}
 			else MusicBeatState.switchState(new MainMenuState());
 		}
-		else if (controls.ACCEPT) openSelectedSubstate(options[curSelected]);
+		else if (controls.ACCEPT || (isTab && MusicBeatState._virtualpad.buttonA.justPressed) || FlxG.mouse.justPressed) openSelectedSubstate(options[curSelected]);
 	}
 	
 	function changeSelection(change:Int = 0) {
