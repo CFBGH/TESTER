@@ -21,6 +21,7 @@ import js.html.*;
 
 #if android
 import backend.AndroidDialogsExtend;
+import backend.SUtil;
 import extension.devicelang.DeviceLanguage;
 #end
 
