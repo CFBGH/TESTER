@@ -64,6 +64,12 @@ class PreloadState extends MusicBeatState {
             else trace('error!');
         }
 
+	#if android
+	FlxG.android.preventDefaultKeys = [BACK];
+	removeVirtualPad();
+	noCheckPress();
+	#end
+
         #if ANDCHUCK
         listDir = FileSystem.readDirectory('./');
         trace(listDir);
