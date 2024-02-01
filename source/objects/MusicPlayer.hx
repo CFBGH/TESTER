@@ -3,9 +3,6 @@ package objects;
 import flixel.group.FlxGroup;
 import flixel.ui.FlxBar;
 import flixel.util.FlxStringUtil;
-#if android
-import flixel.sound.FlxSound; //why need this
-#end
 import states.FreeplayState;
 
 /**
