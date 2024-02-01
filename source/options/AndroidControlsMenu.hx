@@ -170,7 +170,7 @@ class AndroidControlsMenu extends MusicBeatState
 		if (curSelected >= controlitems.length)
 			curSelected = 0;
 	
-		inputvari.changeText(controlitems[curSelected]);
+		inputvari.text = controlitems[curSelected];
 
 		var daChoice:String = controlitems[Math.floor(curSelected)];
 
