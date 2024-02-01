@@ -340,7 +340,7 @@ class MusicPlayer extends FlxGroup
 
 	function setPlaybackRate() 
 	{
-		FlxG.sound.music.pitch = playbackRate;
+		//FlxG.sound.music.pitch = playbackRate;
 		//if (FreeplayState.vocals != null) FreeplayState.vocals.pitch = playbackRate; //not pitch :(
 	}
 
