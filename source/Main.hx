@@ -66,9 +66,7 @@ class Main extends Sprite
 		super();
 
 		// Credits to MAJigsaw77 (he's the og author for this code)
-		#if android
-		Sys.setCwd(Path.addTrailingSlash(Context.getExternalFilesDir()));
-		#elseif ios
+		#if ios
 		Sys.setCwd(lime.system.System.applicationStorageDirectory);
 		#end
 
