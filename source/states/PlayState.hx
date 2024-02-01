@@ -43,20 +43,15 @@ import flixel.addons.display.FlxRuntimeShader;
 import openfl.filters.ShaderFilter;
 #end
 
-#if(ClientPrefs.data.styleEngine != 'MicUp')
 import states.FreeplayState;
-import states.StoryMenuState;
-#else
 import states.StoryMenuState;
 import states.FreeplayStyle;
 import states.EndlessState;
 import states.MenuEndless;
 import states.MenuMarathon;
 import states.MenuSurvival;
-
 import substates.Survival_GameOptions._survivalVars;
 import substates.Endless_Substate._endless;
-#end
 
 #if VIDEOS_ALLOWED
 #if (hxCodec >= "3.0.0") import hxcodec.flixel.FlxVideo as VideoHandler;
@@ -2196,7 +2191,7 @@ class PlayState extends MusicBeatState
 			if(secondsTotal < 0) secondsTotal = 0;
 
 			if(ClientPrefs.data.timeBarType != 'Song Name') {
-				if (ClientPrefs.data.styleEngine == 'Kade' || ClientPrefs.data.styleEngine == 'MicUp') songNameBar.text = '${SONG.song} - ${FlxStringUtil.formatTime(secondsTotal, false);}'
+				if (ClientPrefs.data.styleEngine == 'Kade' || ClientPrefs.data.styleEngine == 'MicUp') songNameBar.text = '${SONG.song} - ${FlxStringUtil.formatTime(secondsTotal, false)}'
 				else timeTxt.text = FlxStringUtil.formatTime(secondsTotal, false);
 			}
 		}
