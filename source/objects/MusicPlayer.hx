@@ -341,8 +341,7 @@ class MusicPlayer extends FlxGroup
 	function setPlaybackRate() 
 	{
 		FlxG.sound.music.pitch = playbackRate;
-		if (FreeplayState.vocals != null)
-			FreeplayState.vocals.pitch = playbackRate;
+		//if (FreeplayState.vocals != null) FreeplayState.vocals.pitch = playbackRate; //not pitch :(
 	}
 
 	function get_playing():Bool 
