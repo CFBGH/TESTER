@@ -105,6 +105,8 @@ import states.TitleState;
 	public var badWindow:Int = 135;
 	public var safeFrames:Float = 10;
 	public var guitarHeroSustains:Bool = true;
+	public var spaceExtend:Bool = true;
+	public var shiftExtend:Bool = true;
 
 	public function new() {
 		// Why does haxe needs this again?
