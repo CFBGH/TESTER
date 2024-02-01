@@ -6,6 +6,7 @@ import flixel.FlxSubState;
 import flixel.addons.display.FlxBackdrop;
 import flixel.addons.display.FlxGridOverlay;
 import objects.HealthIcon;
+import flixel.addons.transition.FlxTransitionableState;
 
 class ResetScoreSubState extends MusicBeatSubstate {
 	var bg:FlxSprite;
@@ -109,35 +110,12 @@ class ResetScoreSubState extends MusicBeatSubstate {
 				if(states.FreeplayStyle.vocals != null) states.FreeplayStyle.vocals.fadeIn(0.4, 0);
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 				
-				FlxTween.tween(text, {alpha: 0}, 0.1, {
-					ease: FlxEase.quadOut,
-					onComplete: function(twn:FlxTween) {
-						FlxTween.tween(yesText, {alpha: 0}, 0.1, {
-							ease: FlxEase.quadOut,
-							onComplete: function(twn:FlxTween) {
-								FlxTween.tween(icon, {alpha: 0}, 0.1, {
-									ease: FlxEase.quadOut,
-									onComplete: function(twn:FlxTween) {
-										FlxTween.tween(bg, {alpha: 0}, 0.1, {
-											ease: FlxEase.quadOut,
-											onComplete: function(twn:FlxTween) {
-												#if android
-												FlxTransitionableState.skipNextTransOut = true;
-												FlxG.resetState();
-												#else
-												close();
-												#end
-											}
-										});
-									}
-								});
-							}
-						});
-						FlxTween.tween(noText, {alpha: 0}, 0.1, {
-							ease: FlxEase.quadOut
-						});
-					}
-				});
+				#if android
+				FlxTransitionableState.skipNextTransOut = true;
+				FlxG.resetState();
+				#else
+				close();
+				#end
 			} else {
 				close();
 				FlxG.sound.play(Paths.sound('cancelMenu'));
