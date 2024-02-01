@@ -110,7 +110,11 @@ class Main extends Sprite
 		Controls.instance = new Controls();
 		ClientPrefs.loadDefaultKeys();
 		#if ACHIEVEMENTS_ALLOWED Achievements.load(); #end
+		#if mobile
+		addChild(new FlxGame(1280, 720, TitleState, 60, 60, true, false));
+		#else
 		addChild(new FlxGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate, game.skipSplash, game.startFullscreen));
+		#end
 
 		fpsVar = new FPSCounter(10, 3, 0xFFFFFF);
 		addChild(fpsVar);
@@ -188,6 +192,12 @@ class Main extends Sprite
 			FileSystem.createDirectory("./crash/");
 
 		File.saveContent(path, errMsg + "\n");
+
+		#if android
+		var toastText:String = '';
+		toastText = 'Uncaught Error happends!';
+		AndroidDialogsExtend.OpenToast(toastText, 1);
+		#end
 
 		Sys.println(errMsg);
 		Sys.println("Crash dump saved in " + Path.normalize(path));
