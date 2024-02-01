@@ -4,7 +4,7 @@ import flixel.addons.display.FlxBackdrop;
 import flixel.addons.display.FlxGridOverlay;
 import objects.AttachedText;
 import objects.CheckboxThingie;
-
+import flixel.addons.transition.FlxTransitionableState;
 
 class GameplayChangersSubstate extends MusicBeatSubstate {
 	private var curOption:GameplayOption = null;
