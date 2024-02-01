@@ -128,11 +128,6 @@ class AndroidControlsMenu extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
-		leftArrow.x = inputvari.x - 60;
-		rightArrow.x = inputvari.x + inputvari.width + 10;
-		inputvari.screenCenter(X);
-		
 		for (touch in FlxG.touches.list){		
 			if(touch.overlaps(leftArrow) && touch.justPressed)
 			{
@@ -145,26 +140,25 @@ class AndroidControlsMenu extends MusicBeatState
 			trackbutton(touch);
 		}
 
-		if(controls.UI_LEFT_P)
-			changeSelection(-1);
-		if(controls.UI_RIGHT_P)
-			changeSelection(1);
-		
-		#if android
-		if (FlxG.android.justReleased.BACK) {
-			save();
-			FlxTransitionableState.skipNextTransIn = true;
-			FlxTransitionableState.skipNextTransOut = true;
-			MusicBeatState.switchState(new options.OptionsState());
-		}
-		#end
-
 		if(controls.BACK) {
 			save();
 			FlxTransitionableState.skipNextTransIn = true;
 			FlxTransitionableState.skipNextTransOut = true;
 			MusicBeatState.switchState(new options.OptionsState());
 		}
+
+		if(controls.UI_LEFT_P) changeSelection(-1);
+		if(controls.UI_RIGHT_P) changeSelection(1);
+		
+		#if android
+		if (FlxG.android.justReleased.BACK)
+		{
+			save();
+			FlxTransitionableState.skipNextTransIn = true;
+			FlxTransitionableState.skipNextTransOut = true;
+			MusicBeatState.switchState(new options.OptionsState());
+		}
+		#end
 	}
 
 	function changeSelection(change:Int = 0)
