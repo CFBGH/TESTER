@@ -3,7 +3,7 @@ package objects;
 import flixel.group.FlxGroup;
 import flixel.ui.FlxBar;
 import flixel.util.FlxStringUtil;
-
+import flixel.sound.FlxSound;
 import states.FreeplayState;
 
 /**
