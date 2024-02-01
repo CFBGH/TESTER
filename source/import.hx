@@ -19,6 +19,11 @@ import sys.io.*;
 import js.html.*;
 #end
 
+#if android
+import backend.AndroidDialogsExtend;
+import extension.devicelang.DeviceLanguage;
+#end
+
 import backend.Paths;
 import backend.Controls;
 import backend.CoolUtil;
