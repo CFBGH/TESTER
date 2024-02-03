@@ -1561,11 +1561,9 @@ class PlayState extends MusicBeatState
 	function startSong():Void
 	{
 		startingSong = false;
-
-		@:privateAccess
 		FlxG.sound.playMusic(inst._sound, 1, false);
 		#if FLX_PITCH FlxG.sound.music.pitch = playbackRate; #end
-		FlxG.sound.music.onComplete = finishSong.bind();
+		//FlxG.sound.music.onComplete = finishSong.bind();
 		vocals.play();
 
 		if(startOnTime > 0) setSongTime(startOnTime - 500);
