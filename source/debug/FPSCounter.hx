@@ -3,14 +3,22 @@ package debug;
 import flixel.FlxG;
 import Main;
 import Sys;
+import openfl.Lib;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.system.System;
+import lime.system.System as LSystem;
 
 /**
 	The FPS class provides an easy-to-use monitor to display
 	the current frame rate of an OpenFL project
 **/
+
+enum GLInfo {
+	RENDERER;
+	SHADING_LANGUAGE_VERSION;
+}
+
 class FPSCounter extends TextField
 {
 	/**
@@ -24,6 +32,8 @@ class FPSCounter extends TextField
 	public var memoryMegas(get, never):Float;
 	public var memp:Float;
 	public var ft:Float;
+	public var desktopMode:Bool = true;
+	public static var notes:Int = 0;
 
 	@:noCompletion private var times:Array<Float>;
 
@@ -33,8 +43,12 @@ class FPSCounter extends TextField
 
 		this.x = x;
 		this.y = y;
-
 		currentFPS = 0;
+		#if android
+		desktopMode = false;
+		#else 
+		if(ClientPrefs.data.tabletmode) desktopMode = false;
+		#end
 		selectable = false;
 		mouseEnabled = false;
 		defaultTextFormat = new TextFormat("_sans", 13, color);
@@ -50,6 +64,7 @@ class FPSCounter extends TextField
 	// Event Handlers
 	private override function __enterFrame(deltaTime:Float):Void
 	{
+
 		if (memp < memoryMegas) memp = memoryMegas;
 		if (deltaTimeout > 1000) {
 			deltaTimeout = 0.0;
@@ -72,10 +87,28 @@ class FPSCounter extends TextField
 		+ '\nMemory: ${flixel.util.FlxStringUtil.formatBytes(memoryMegas)}'
 		+ '\nMemory Peak: ${flixel.util.FlxStringUtil.formatBytes(memp)}'
 		+ '\nFrame Time: $ft MS'
-		+ '\n${Main.MAIN_Version}';
+		+ '\n${Main.MAIN_Version}${#if BETA Main.BETA_Version #end}';
 
 		if(ClientPrefs.debug.debugMode/* && ClientPrefs.data.debugText*/) {
-			text += '\nSYSTEM: ${Sys.systemName()}';
+			text += '\nInState: ${Type.getClassName(Type.getClass(FlxG.state))}'
+			+ '\nInSubState: ${(FlxG.state.subState != null ? Type.getClassName(Type.getClass(FlxG.state.subState)) : 'NoSubState')}'
+			+ '\nSYSTEM: ${lime.system.System.platformLabel} ${lime.system.System.platformVersion}'
+			+ '\nDevice: ${lime.system.System.deviceModel} ${lime.system.System.deviceVendor}'
+			+ '\nGL Render: ${getGLInfo(RENDERER)}'
+			+ '\nGL Shading version: ${getGLInfo(SHADING_LANGUAGE_VERSION)})'
+			+ '\nFlixel: ${FlxG.VERSION}'
+			+ '\nPackageName: ${lime.app.Application.current.meta.get("packageName")}'
+			+ '\nResolution: ${ClientPrefs.data.resolution}'
+			+ '\nFullScreen: ${ClientPrefs.data.fullscr}'
+			+ '\nFont File Using: ${ClientPrefs.data.usingfont}'
+			+ '\nMouse Using: ${(ClientPrefs.data.um ? "System" : "Flixel")}'
+			+ '\nControl Mode: ${(Controls.instance.controllerMode ? "USING[Gamepads]" : (desktopMode ? (ClientPrefs.data.tabletmode ? "USING[Touch Device]" : "USING[Keyboard]") : "USING[Touch Device]"))}'
+			+ '\nUesr Path: ${LSystem.userDirectory}'
+			+ '\nLanguage: ${ClientPrefs.data.language}'
+			+ '\nTotal Notes Pressed: $notes'
+			+ '\nGlobal Style: ${ClientPrefs.data.styleEngine}'
+			+ '\nSong BPM: ${Conductor.bpm}'
+			+ '\nDPI: ${LSystem.getDisplay(0).dpi}';
 		}
 
 		defaultTextFormat.font = 'assets/fonts/language/${ClientPrefs.data.language}/${ClientPrefs.data.usingfont}';
@@ -86,4 +119,17 @@ class FPSCounter extends TextField
 	}
 
 	inline function get_memoryMegas():Float return cast(System.totalMemory, UInt);
+
+	private function getGLInfo(info:GLInfo):String {
+		@:privateAccess
+		var gl:Dynamic = Lib.current.stage.context3D.gl;
+
+		switch (info) {
+			case RENDERER:
+				return Std.string(gl.getParameter(gl.RENDERER));
+			case SHADING_LANGUAGE_VERSION:
+				return Std.string(gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
+		}
+		return '';
+	}
 }
