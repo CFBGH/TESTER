@@ -1562,7 +1562,7 @@ class PlayState extends MusicBeatState
 	{
 		@:privateAccess
 		startingSong = false;
-		FlxG.sound.playMusic(inst._sound, 1, false);
+		FlxG.sound.playMusic(inst, 1, false);
 		#if FLX_PITCH FlxG.sound.music.pitch = playbackRate; #end
 		//FlxG.sound.music.onComplete = finishSong.bind();
 		vocals.play();
