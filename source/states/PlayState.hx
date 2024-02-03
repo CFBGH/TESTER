@@ -2727,7 +2727,7 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	public function finishSong(?ignoreNoteOffset:Bool = false):Void
+	public function finishSong(ignoreNoteOffset = false)
 	{
 		updateTime = false;
 		FlxG.sound.music.volume = 0;
