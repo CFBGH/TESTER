@@ -10,7 +10,10 @@ import states.TitleState;
 	public var downScroll:Bool = false;
 	public var middleScroll:Bool = false;
 	public var opponentStrums:Bool = true;
+	public var acrash:Bool = false;
 	public var globalAntialiasing:Bool = true;
+	public var eld:Bool = false;
+	public var elms:Int = 0;
 	public var showFPS:Bool = false;
 	public var flashing:Bool = true;
 	public var fullscr:Bool = #if android true #else false #end;
@@ -24,23 +27,26 @@ import states.TitleState;
 	public var splashSkin:String = 'Psych';
 	public var splashAlpha:Float = 0.6;
 	public var lowQuality:Bool = false;
+	public var selectSongPlay:Bool = true;
 	public var shaders:Bool = true;
 	public var cacheOnGPU:Bool = #if !switch false #else true #end; // From Stilic
 	public var framerate:Int = 60;
 	public var camZooms:Bool = true;
+	public var foucsMusic:Bool = false;
 	public var camZoomingMult:Float = 1;
 	public var hideHud:Bool = false;
 	public var msDisplay:Bool = false;
-	public var um:Bool = false;
+	public var um:String = 'HaxeFlixel';
+	public var fademode:String = 'Fade';
+	public var fadeStyle:String = 'baldi';
+	public var fadeText:Bool = true;
 	public var zoomMode:String = 'Section';
 	public var haveVoices:Bool = false;
 	public var blueberry:Bool = false;
-	public var rs:Bool = false;
-	public var rainbowFPS:Bool = false;
+	public var southeme:String = 'Official';
 	public var keHealth:String = 'Psych';
 	public var language:String = 'en_us';
 	public var styleEngine:String = 'Vanilla';
-	public var oldVHB:Bool = false;
 	public var noteOffset:Int = 0;
 	public var imagesPersist:Bool = false;
 	public var arrowRGB:Array<Array<FlxColor>> = [
@@ -61,13 +67,16 @@ import states.TitleState;
 	public var scoreZoom:Bool = true;
 	public var noReset:Bool = false;
 	public var healthBarAlpha:Float = 1;
-	public var hitsoundVolume:Float = 0;
+	public var soundVolume:Float = 1;
+	public var musicVolume:Float = 1;
+	public var hitVolume:Float = 0.75;
 	public var hitsound:String = 'hitsound';
 	public var pauseMusic:String = 'Tea Time';
 	public var checkForUpdates:Bool = true;
 	public var comboDis:Bool = false;
 	public var comboStacking:Bool = true;
-	public var replayNum:Int = 20;
+	public var spaceExtend:Bool = true;
+	public var shiftExtend:Bool = true;
 
 	public var hitboxmode:String = 'New';
 	public var hitboxLocation:String = 'Bottom';
@@ -105,8 +114,6 @@ import states.TitleState;
 	public var badWindow:Int = 135;
 	public var safeFrames:Float = 10;
 	public var guitarHeroSustains:Bool = true;
-	public var spaceExtend:Bool = true;
-	public var shiftExtend:Bool = true;
 
 	public function new() {
 		// Why does haxe needs this again?
@@ -116,6 +123,8 @@ import states.TitleState;
 @:structInit class SaveDebug {
 	public var tab:Bool = false;
 	public var debugMode:Bool = false;
+	public var oldOptions:Bool = false;
+	public var luaExtend:Bool = false;
 	public function new() {}
 }
 

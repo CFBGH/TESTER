@@ -47,6 +47,7 @@ typedef ReplayJSON =
 	public var songNotes:Array<Dynamic>;
 	public var songJudgements:Array<String>;
 	public var noteSpeed:Float;
+	public var week:Int;
 	public var chartPath:String;
 	public var isDownscroll:Bool;
 	public var sf:Int;
@@ -72,6 +73,7 @@ class Replay
 			songNotes: [],
 			replayGameVer: version,
 			chartPath: "",
+			week: 0,
 			timestamp: Date.now(),
 			sf: Std.int(ClientPrefs.data.safeFrames),
 			ana: new Analysis(),
@@ -123,6 +125,7 @@ class Replay
 			"chartPath": chartPath,
 			"timestamp": Date.now(),
 			"replayGameVer": version,
+			"week": PlayState.storyWeek,
 			"sf": Std.int(ClientPrefs.data.safeFrames),
 			"noteSpeed": (ClientPrefs.getGameplaySetting('scrollspeed') > 1 ? ClientPrefs.getGameplaySetting('scrollspeed') : PlayState.SONG.speed),
 			"isDownscroll": ClientPrefs.data.downScroll,
@@ -136,10 +139,12 @@ class Replay
 
 		var time = Date.now().getTime();
 
-		try {File.saveContent('assets/replays/${PlayState.SONG.song}/tfe10_${PlayState.SONG.song}-$time.rep', data);}
-		catch(e:Dynamic) {trace(e);}
+		try {
+			if (!FileSystem.isDirectory('assets/replays/${PlayState.SONG.song}')) FileSystem.createDirectory('assets/replays/${PlayState.SONG.song}');
+			File.saveContent('assets/replays/${PlayState.SONG.song}/${PlayState.SONG.song}-${PlayState.storyDifficulty}_$time.rep', data);
+		} catch(e:Dynamic) {trace(e);}
 
-		path = '${PlayState.SONG.song}/tfe10_${PlayState.SONG.song}-$time.rep'; // for score screen shit
+		path = '${PlayState.SONG.song}/${PlayState.SONG.song}-${PlayState.storyDifficulty}_$time.rep'; // for score screen shit
 
 		LoadFromJSON();
 

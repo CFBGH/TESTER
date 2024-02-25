@@ -189,6 +189,10 @@ class WeekData {
 		return weeksLoaded.get(weeksList[PlayState.storyWeek]);
 	}
 
+	public static function getCurrentWeekFromWeekNum(num:Int = 0):WeekData {
+		return weeksLoaded.get(weeksList[num]);
+	}
+
 	public static function setDirectoryFromWeek(?data:WeekData = null) {
 		Mods.currentModDirectory = '';
 		if(data != null && data.folder != null && data.folder.length > 0) {
