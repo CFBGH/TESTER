@@ -8,7 +8,14 @@ class PathsList {
             var output = readingDir[i].split('.');
             listFile.push(output[0]);
         }
-        trace(listFile);
         return listFile;
+    }
+
+    public static function soundThemeList() {
+        var listFile:Array<String> = FileSystem.readDirectory('assets/shared/sounds/theme');
+        return listFile;
+    }
+    public static function themeSound(key:String) {
+        return Paths.sound('theme/${ClientPrefs.data.southeme}/$key');
     }
 }

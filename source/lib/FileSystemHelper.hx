@@ -1,4 +1,4 @@
-package other;
+package lib;
 
 import haxe.io.Path;
 import sys.FileSystem;
