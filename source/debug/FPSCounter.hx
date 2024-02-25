@@ -1,8 +1,10 @@
 package debug;
 
+import states.PreloadState;
 import flixel.FlxG;
 import Main;
 import Sys;
+import cpp.vm.Gc;
 import openfl.Lib;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
@@ -87,7 +89,8 @@ class FPSCounter extends TextField
 		+ '\nMemory: ${flixel.util.FlxStringUtil.formatBytes(memoryMegas)}'
 		+ '\nMemory Peak: ${flixel.util.FlxStringUtil.formatBytes(memp)}'
 		+ '\nFrame Time: $ft MS'
-		+ '\n${Main.MAIN_Version}';
+		+ '\n${Main.MAIN_Version #if BETA + Main.BETA_Version #end}'
+		+ '\n${#if OFFICIAL (PreloadState.ISMODED ? "IS NOT OFFICIAL VERSION or IS OLD VERSION" : '') #else'!--IS NOT OFFICIAL VERSION--!'#end}';
 
 		if(ClientPrefs.debug.debugMode/* && ClientPrefs.data.debugText*/) {
 			text += '\nInState: ${Type.getClassName(Type.getClass(FlxG.state))}'
@@ -101,7 +104,7 @@ class FPSCounter extends TextField
 			+ '\nResolution: ${ClientPrefs.data.resolution}'
 			+ '\nFullScreen: ${ClientPrefs.data.fullscr}'
 			+ '\nFont File Using: ${ClientPrefs.data.usingfont}'
-			+ '\nMouse Using: ${(ClientPrefs.data.um ? "System" : "Flixel")}'
+			+ '\nMouse Using: ${ClientPrefs.data.um}'
 			+ '\nControl Mode: ${(Controls.instance.controllerMode ? "USING[Gamepads]" : (desktopMode ? (ClientPrefs.data.tabletmode ? "USING[Touch Device]" : "USING[Keyboard]") : "USING[Touch Device]"))}'
 			+ '\nUesr Path: ${LSystem.userDirectory}'
 			+ '\nLanguage: ${ClientPrefs.data.language}'
@@ -118,8 +121,8 @@ class FPSCounter extends TextField
 			textColor = 0xFFFF0000;
 	}
 
-	inline function get_memoryMegas():Float return cast(System.totalMemory, UInt);
-
+	//inline function get_memoryMegas():Float return cast(System.totalMemory, UInt);
+	inline function get_memoryMegas():Float return Gc.memInfo64(0)+Gc.memInfo64(3)+Gc.memInfo64(2);
 	private function getGLInfo(info:GLInfo):String {
 		@:privateAccess
 		var gl:Dynamic = Lib.current.stage.context3D.gl;
