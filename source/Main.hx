@@ -2,6 +2,9 @@ package;
 
 import debug.FPSCounter;
 
+import openfl.events.UncaughtErrorEvent;
+import haxe.CallStack;
+
 import flixel.graphics.FlxGraphic;
 import flixel.FlxGame;
 import flixel.FlxState;
@@ -40,17 +43,21 @@ class Main extends Sprite
 		zoom: -1.0, // game state bounds
 		framerate: 60, // default framerate
 		skipSplash: false, // if the default flixel splash screen should be skipped
-		startFullscreen: true // if the game should start at fullscreen mode
+		startFullscreen: false // if the game should start at fullscreen mode
 	};
 
 	public static var MainInfos:Array<String> = [
 		'ToFunkinEngine',
 		'com.comesfromback.tofunkinengine',
 		'Comes_FromBack',
-		'621',
+		#if OFFICIAL
+		'OBuildProject'
+		#else
+		'NotBuildProject'
+		#end
 	];
 
-	public static var BETA_Version = '(BETA 2024131_072h-05)';
+	public static var BETA_Version = '(BETA 20240205_072h-07 Part:2/4)';
 	public static var MAIN_Version = 'To Funkin Engine v1.0';
 	public static var fpsVar:FPSCounter;
 
@@ -64,7 +71,6 @@ class Main extends Sprite
 	public function new()
 	{
 		super();
-		SUtil.gameCrashCheck();
 
 		// Credits to MAJigsaw77 (he's the og author for this code)
 		#if ios
@@ -104,18 +110,14 @@ class Main extends Sprite
 			game.width = Math.ceil(stageWidth / game.zoom);
 			game.height = Math.ceil(stageHeight / game.zoom);
 		}
-		SUtil.doTheCheck();
-		
 		#if LUA_ALLOWED Lua.set_callbacks_function(cpp.Callable.fromStaticFunction(psychlua.CallbackHandler.call)); #end
 		Controls.instance = new Controls();
 		ClientPrefs.loadDefaultKeys();
+		if (MainInfos.length < 4) MainInfos.push(#if OFFICIAL 'OBuildProject'#else'NotBuildProject'#end);
 		#if ACHIEVEMENTS_ALLOWED Achievements.load(); #end
-		#if mobile
-		addChild(new FlxGame(1280, 720, PreloadState, 60, 60, true, false));
-		#else
-		addChild(new FlxGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate, game.skipSplash, game.startFullscreen));
-		#end
+		addChild(new FlxGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate, false, game.startFullscreen));
 
+		#if !mobile
 		fpsVar = new FPSCounter(10, 3, 0xFFFFFF);
 		addChild(fpsVar);
 		Lib.current.stage.align = "tl";
@@ -123,6 +125,7 @@ class Main extends Sprite
 		if(fpsVar != null) {
 			fpsVar.visible = ClientPrefs.data.showFPS;
 		}
+		#end
 
 		#if linux
 		var icon = Image.fromFile("icon.png");
@@ -167,43 +170,57 @@ class Main extends Sprite
 	{
 		var errMsg:String = "";
 		var path:String;
+		var errcode = e.error;
+		var printError:String = '';
 		var callStack:Array<StackItem> = CallStack.exceptionStack(true);
 		var dateNow:String = Date.now().toString();
+		var	appName:String = Application.current.meta.get('file')+".exe";
+		var parentPath = Sys.programPath().substr(0, Sys.programPath().length-appName.length);
+    	var cmd = "cd/D "+parentPath+" && HaxeflixelCrashHandler.exe -"+errcode+" -"+parentPath+" -"+appName;
 
 		dateNow = dateNow.replace(" ", "_");
 		dateNow = dateNow.replace(":", "'");
-
 		path = "./crash/" + "ToFunkinEngine_" + dateNow + ".txt";
 
-		for (stackItem in callStack)
-		{
-			switch (stackItem)
+		if(!ClientPrefs.data.acrash) {
+			for (stackItem in callStack)
 			{
-				case FilePos(s, file, line, column):
-					errMsg += file + " (line " + line + ")\n";
-				default:
-					Sys.println(stackItem);
+				switch (stackItem)
+				{
+					case FilePos(s, file, line, column):
+						errMsg += file + " (line " + line + ")\n";
+					default:
+						Sys.println(stackItem);
+				}
 			}
-		}
 
-		errMsg += "\nUncaught Error: " + e.error + "\nPlease report this error to the GitHub page: https://github.com/ShadowMario/FNF-PsychEngine\n\n> Crash Handler written by: sqirra-rng";
+			errMsg += "\nUncaught Error: " + errcode + "\nPlease report this error to the GitHub page: https://github.com/ShadowMario/FNF-PsychEngine\n\n> Crash Handler written by: sqirra-rng";
+
+			Sys.println(errMsg);
+			Sys.println("Crash dump saved in " + Path.normalize(path));
+
+			Application.current.window.alert(errMsg, "Error!");
+			Sys.exit(1);
+		} else {
+			for (stackItem in callStack) {
+				switch (stackItem) {
+					case FilePos(s, file, line, column):
+						printError += file + " (line " + line + ")\n";
+					default:
+						Sys.println(stackItem);
+				}
+			}
+
+			cmd = "cd/D "+parentPath+" && HaxeflixelCrashHandler.exe -"+printError+" -"+parentPath+" -"+appName;
+
+			Sys.command(cmd);
+			Sys.exit(1);
+		}
 
 		if (!FileSystem.exists("./crash/"))
 			FileSystem.createDirectory("./crash/");
 
 		File.saveContent(path, errMsg + "\n");
-
-		#if android
-		var toastText:String = '';
-		toastText = 'Uncaught Error happends!';
-		AndroidDialogsExtend.OpenToast(toastText, 1);
-		#end
-
-		Sys.println(errMsg);
-		Sys.println("Crash dump saved in " + Path.normalize(path));
-
-		Application.current.window.alert(errMsg, "Error!");
-		Sys.exit(1);
 	}
 	#end
 }

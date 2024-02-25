@@ -19,17 +19,11 @@ import sys.io.*;
 import js.html.*;
 #end
 
-#if android
-import backend.AndroidDialogsExtend;
-import backend.SUtil;
-import extension.devicelang.DeviceLanguage;
-#end
-
 import backend.Paths;
 import backend.Controls;
 import backend.CoolUtil;
 import backend.MusicBeatState;
-import backend.MusicBeatSubstate;
+import backend.MusicBeatSubState;
 import backend.CustomFadeTransition;
 import backend.ClientPrefs;
 import backend.Conductor;
@@ -38,6 +32,7 @@ import backend.Difficulty;
 import backend.Mods;
 import lib.Language.language;
 import lib.Language;
+import lib.PathsList;
 
 import objects.Alphabet;
 import objects.BGSprite;
@@ -68,6 +63,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.addons.display.FlxBackdrop;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.addons.display.FlxGridOverlay;
+import flixel.addons.transition.FlxTransitionableState;
 
 using StringTools;
 #end
