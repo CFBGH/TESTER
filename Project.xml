@@ -2,10 +2,10 @@
 <project>
 	<!-- _________________________ 应用程序设置 _________________________ -->
 
-	<app title="Friday Night Funkin': To Funkin Engine" file="ToFunkinEngine" packageName="com.comesfromback.tofunkinengine" package="com.comesfromback.tofunkinengine" main="Main" version="0.2.8" company="Comes_FromBack" />
+	<app title="Friday Night Funkin': To Funkin Engine" file="ToFunkinEngine" packageName="com.comesfromback.tofunkinengine" package="com.comesfromback.tofunkinengine" main="Main" version="0.2.8" company="Comes_FromBack"/>
 
 	<!--具有唯一 ApplicationID 和图标的开关导出-->
-	<set name="APP_ID" value="0x0100f6c013bbc000" />
+	<set name="APP_ID" value="0x0100f6c013bbc114" />
 
 	<!-- 给自己的注意事项：如果发现问题，请禁用此功能 -->
 	<haxedef name="LINC_LUA_RELATIVE_DYNAMIC_LIB"/> <!-- 稳定的 LUAS 放在第一行之后，并带有应用程序名称等 -->
@@ -20,16 +20,18 @@
 	
 	<!-- ______________________ PSYCH 引擎定制 ______________________ -->
 
-	<define name="MODS_ALLOWED" if="desktop || android"/>
-	<define name="HSCRIPT_ALLOWED" />
-	<define name="LUA_ALLOWED" if="desktop || android"/>
+	<define name="MODS_ALLOWED" if="desktop" />
+	<define name="HSCRIPT_ALLOWED" if="desktop" />
+	<define name="LUA_ALLOWED" if="desktop" />
+	<define name="PY_SCRIPT" if="desktop"/>
 	<define name="ACHIEVEMENTS_ALLOWED" />
 	<define name="VIDEOS_ALLOWED" if="windows || linux || android" unless="32bits"/>
 	<define name="PSYCH_WATERMARKS"/> <!-- 删除此项以删除标题屏幕上的水印/开发名称 -->
-	<define name="TITLE_SCREEN_EASTER_EGG" if="officialBuild"/> <!-- 删除 IF =“officialBuild” 以在非官方构建上启用此功能 -->
+	<define name="OFFICIAL" if="release"/>
+	<!--define name="TITLE_SCREEN_EASTER_EGG" if="officialBuild"/> <! 删除 IF =“officialBuild” 以在非官方构建上启用此功能 -->
 
 	<!-- ______________________ ToFunkin 引擎定制 ______________________ -->
-	<define name="BETA" if="desktop"/>
+	<define name="BETA" if="release"/>
 	<define name="ANDCHUCK" if="android"/>
 
 	<!-- ____________________________ 窗口设置 ___________________________ -->
@@ -59,7 +61,7 @@
 	<!-- __________________________ Game Assets & Etc. __________________________ -->
 	
 	<!-- Turn on Crash Handler -->
-	<define name="CRASH_HANDLER" if="desktop release || android" />
+	<define name="CRASH_HANDLER" if="desktop release" />
 
 	<!-- Assets -->
 	<assets path="assets/fonts" />
@@ -107,10 +109,6 @@
 	<!-- Enables a terminal log prompt on debug builds -->
 	<haxelib name="hxcpp-debug-server" if="debug"/>
 	<haxedef name="HXC_LIBVLC_LOGGING" if="VIDEOS_ALLOWED debug" />
-	<haxelib name="extension-androidtools" if="android"/>
-	<haxelib name="androiddialogs" if="android" />
-	<haxelib name="devicelanguage" if="android" />
-	<haxelib name="extension-orientation" if="mobile" />
 	
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
@@ -162,15 +160,6 @@
 	<!-- _________________________________ Custom _______________________________ -->
 
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
-
-	<config:android permission="android.permission.READ_EXTERNAL_STORAGE" if="android"/>
-	<config:android permission="android.permission.WRITE_EXTERNAL_STORAGE" if="android"/>
-    	<config:android gradle-version="7.5.1" />
-	<config:android gradle-plugin="7.3.1" />
-
-	<!--Macro fixes-->
-	<haxeflag name="--macro" value="allowPackage('flash')" />
-	<haxeflag name="--macro" value="include('my.pack')" />
 
 	<assets path='art/iconOG.png' rename='icon.png' if="linux" />
 	
