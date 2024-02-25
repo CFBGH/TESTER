@@ -14,7 +14,7 @@ import flixel.animation.FlxAnimationController;
 import flixel.input.keyboard.FlxKey;
 import openfl.events.KeyboardEvent;
 
-class EditorPlayState extends MusicBeatSubstate
+class EditorPlayState extends MusicBeatSubState
 {
 	// Borrowed from original PlayState
 	var finishTimer:FlxTimer = null;
@@ -88,7 +88,7 @@ class EditorPlayState extends MusicBeatSubstate
 
 		cachePopUpScore();
 		guitarHeroSustains = ClientPrefs.data.guitarHeroSustains;
-		if(ClientPrefs.data.hitsoundVolume > 0) Paths.sound('hitsound');
+		if(ClientPrefs.data.soundVolume > 0) Paths.sound('hitsound');
 
 		/* setting up Editor PlayState stuff */
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
@@ -792,8 +792,8 @@ class EditorPlayState extends MusicBeatSubstate
 		if(note.wasGoodHit) return;
 
 		note.wasGoodHit = true;
-		if (ClientPrefs.data.hitsoundVolume > 0 && !note.hitsoundDisabled)
-			FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.data.hitsoundVolume);
+		if (ClientPrefs.data.soundVolume > 0 && !note.hitsoundDisabled)
+			FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.data.soundVolume);
 
 		if(note.hitCausesMiss) {
 			noteMiss(note);

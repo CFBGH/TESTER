@@ -296,6 +296,13 @@ class EndlessState extends MusicBeatState
 		text.scrollFactor.set();
 		add(text);
 		text.visible = false;
+
+		#if android
+		addVirtualPad(UP_DOWN, A_B);
+		#else
+		if(ClientPrefs.data.tabletmode)
+			addVirtualPad(UP_DOWN, A_B);
+		#end
 		
 		updateTexts();
 		super.create();
@@ -350,9 +357,10 @@ class EndlessState extends MusicBeatState
 	var holdTime:Float = 0;
 	override function update(elapsed:Float)
 	{
+		var isTab:Bool = ClientPrefs.data.tabletmode;
 		if (FlxG.sound.music.volume < 0.7)
 		{
-			// FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
 
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, FlxMath.bound(elapsed * 24, 0, 1)));
@@ -395,18 +403,18 @@ class EndlessState extends MusicBeatState
 				changeSelection();
 				holdTime = 0;	
 			}
-			if (controls.UI_UP_P)
+			if (controls.UI_UP_P || (isTab && MusicBeatState._virtualpad.buttonUp.justPressed))
 			{
 				changeSelection(-shiftMult);
 				holdTime = 0;
 			}
-			if (controls.UI_DOWN_P)
+			if (controls.UI_DOWN_P || (isTab && MusicBeatState._virtualpad.buttonDown.justPressed))
 			{
 				changeSelection(shiftMult);
 				holdTime = 0;
 			}
 
-			if(controls.UI_DOWN || controls.UI_UP)
+			if(controls.UI_DOWN || controls.UI_UP  || (isTab && MusicBeatState._virtualpad.buttonUp.pressed) || (isTab && MusicBeatState._virtualpad.buttonDown.pressed))
 			{
 				var checkLastHold:Int = Math.floor((holdTime - 0.5) * 10);
 				holdTime += elapsed;
@@ -418,23 +426,23 @@ class EndlessState extends MusicBeatState
 
 			if(FlxG.mouse.wheel != 0)
 			{
-				FlxG.sound.play(Paths.sound('scrollMenu'), 0.8);
+				FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 				changeSelection(-shiftMult * FlxG.mouse.wheel, false);
 			}
 		}
 
-		if (controls.UI_LEFT_P)
+		if (controls.UI_LEFT_P || (isTab && MusicBeatState._virtualpad.buttonLeft.justPressed))
 		{
 			changeDiff(-1);
 			_updateSongLastDifficulty();
 		}
-		else if (controls.UI_RIGHT_P)
+		else if (controls.UI_RIGHT_P || (isTab && MusicBeatState._virtualpad.buttonRight.justPressed))
 		{
 			changeDiff(1);
 			_updateSongLastDifficulty();
 		}
 
-		if (controls.BACK || FlxG.mouse.justPressedRight)
+		if (controls.BACK || FlxG.mouse.justPressedRight || (isTab && MusicBeatState._virtualpad.buttonB.justPressed))
 		{
 			persistentUpdate = false;
 			if(colorTween != null) {
@@ -442,7 +450,7 @@ class EndlessState extends MusicBeatState
 				colorTween2.cancel();
 				colorTween3.cancel();
 			}
-			FlxG.sound.play(Paths.sound('cancelMenu'));
+			FlxG.sound.play(PathsList.themeSound('cancelMenu'), ClientPrefs.data.soundVolume);
 			MusicBeatState.switchState(new PlaySelection());
 				FlxTween.tween(FlxG.camera, {zoom: 0.6, alpha: -0.6}, 0.7, {ease: FlxEase.quartInOut});
 				FlxTween.tween(bg, {alpha: 0}, 0.7, {ease: FlxEase.quartInOut});
@@ -484,13 +492,13 @@ class EndlessState extends MusicBeatState
 //			}
 //		}
 
-		else if (controls.ACCEPT || FlxG.mouse.justPressed)
+		else if (controls.ACCEPT || FlxG.mouse.justPressed || (isTab && MusicBeatState._virtualpad.buttonA.justPressed))
 		{
 			persistentUpdate = false;
 			var songLowercase:String = Paths.formatToSongPath(songs[curSelected].songName);
 			var poop:String = Highscore.formatSong(songLowercase, curDifficulty);
 
-				FlxG.sound.play(Paths.sound('confirmMenu'));
+			FlxG.sound.play(PathsList.themeSound('confirmMenu'), ClientPrefs.data.soundVolume);
 
 				FlxTween.tween(bg, {alpha: 0}, 0.6, {ease: FlxEase.quartInOut});
 				FlxTween.tween(checker, {alpha: 0}, 0.6, {ease: FlxEase.quartInOut});
@@ -542,7 +550,7 @@ class EndlessState extends MusicBeatState
 				missingText.screenCenter(Y);
 				missingText.visible = true;
 				missingTextBG.visible = true;
-				FlxG.sound.play(Paths.sound('cancelMenu'));
+				FlxG.sound.play(PathsList.themeSound('cancelMenu'), ClientPrefs.data.soundVolume);
 
 				updateTexts(elapsed);
 				super.update(elapsed);
@@ -562,7 +570,7 @@ class EndlessState extends MusicBeatState
 		{
 			persistentUpdate = false;
 			openSubState(new ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));
-			FlxG.sound.play(Paths.sound('scrollMenu'));
+			FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 			iconArray[curSelected].animation.curAnim.curFrame = 1;
 		}
 
@@ -671,7 +679,7 @@ class EndlessState extends MusicBeatState
 	function changeSelection(change:Int = 0, playSound:Bool = true)
 	{
 		_updateSongLastDifficulty();
-		if(playSound) FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+		if(playSound) FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 
 		var lastList:Array<String> = Difficulty.list;
 		curSelected += change;

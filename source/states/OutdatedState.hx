@@ -23,22 +23,30 @@ class OutdatedState extends MusicBeatState
 		warnText.setFormat(Language.fonts(), 32, FlxColor.WHITE, CENTER);
 		warnText.screenCenter(Y);
 		add(warnText);
+
+		#if android
+		addVirtualPad(NONE, A_B);
+		#else
+		if(ClientPrefs.data.tabletmode)
+			addVirtualPad(NONE, A_B);
+		#end
 	}
 
 	override function update(elapsed:Float)
 	{
+		var isTab:Bool = ClientPrefs.data.tabletmode;
 		if(!leftState) {
-			if (controls.ACCEPT) {
+			if (controls.ACCEPT || (isTab && MusicBeatState._virtualpad.buttonA.justPressed)) {
 				leftState = true;
 				CoolUtil.browserLoad("https://github.com/ShadowMario/FNF-PsychEngine/releases");
 			}
-			else if(controls.BACK) {
+			else if(controls.BACK || (isTab && MusicBeatState._virtualpad.buttonB.justPressed)) {
 				leftState = true;
 			}
 
 			if(leftState)
 			{
-				FlxG.sound.play(Paths.sound('cancelMenu'));
+				FlxG.sound.play(PathsList.themeSound('cancelMenu'), ClientPrefs.data.soundVolume);
 				FlxTween.tween(warnText, {alpha: 0}, 1, {
 					onComplete: function (twn:FlxTween) {
 						MusicBeatState.switchState(new TitleState());

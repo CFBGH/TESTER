@@ -74,6 +74,7 @@ class TitleState extends MusicBeatState
 		Language.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
+		trace(Json.parse(Paths.getTextFromFile("images/CustomFadeTransition/CustomStyle.json")));
 
 		super.create();
 
@@ -474,7 +475,7 @@ class TitleState extends MusicBeatState
 				if(titleText != null) titleText.animation.play('press');
 
 				FlxG.camera.flash(ClientPrefs.data.flashing ? FlxColor.WHITE : 0x4CFFFFFF, 1);
-				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+				FlxG.sound.play(PathsList.themeSound('confirmMenu'), ClientPrefs.data.soundVolume);
 
 				transitioning = true;
 				if(ClientPrefs.data.styleEngine == 'MicUp' || ClientPrefs.data.styleEngine == 'Psych') {
@@ -581,6 +582,8 @@ class TitleState extends MusicBeatState
 
 		FlxG.camera.zoom = FlxMath.lerp(1, FlxG.camera.zoom, FlxMath.bound(1 - (elapsed * 3.125), 0, 1));
 
+		states.PreloadState.reloadMouseGraphics();
+
 		super.update(elapsed);
 	}
 
@@ -665,6 +668,7 @@ class TitleState extends MusicBeatState
 
 	private var sickBeats:Int = 0; //Basically curBeat but won't be skipped if you hold the tab or resize the screen
 	public static var closedState:Bool = false;
+
 	override function beatHit()
 	{
 		super.beatHit();
@@ -700,7 +704,7 @@ class TitleState extends MusicBeatState
 						FlxG.sound.playMusic(Paths.music('freakyMenuTH'), 0);
 					else
 						FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
-					FlxG.sound.music.fadeIn(4, 0, 0.7);
+					FlxG.sound.music.fadeIn(4, 0, ClientPrefs.data.musicVolume);
 				case 2:
 					if (ClientPrefs.data.styleEngine == 'Psych') {
 						addMoreTextNew('To Funkin Engine', 301);

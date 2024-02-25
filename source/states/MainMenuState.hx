@@ -367,6 +367,13 @@ class MainMenuState extends MusicBeatState {
 
 		UI_box.addGroup(tab_group_main);
 
+		#if android
+		addVirtualPad(UP_DOWN, A_B_E);
+		#else
+		if(ClientPrefs.data.tabletmode)
+			addVirtualPad(UP_DOWN, A_B_E);
+		#end
+
 		super.create();
 
 		if (ClientPrefs.data.styleEngine != 'MicUp')
@@ -385,12 +392,6 @@ class MainMenuState extends MusicBeatState {
 	var selectedSomethin:Bool = false;
 
 	override function update(elapsed:Float) {
-		if (FlxG.sound.music.volume < 0.8) {
-			FlxG.sound.music.volume += 0.5 * elapsed;
-			if (FreeplayState.vocals != null)
-				FreeplayState.vocals.volume += 0.5 * elapsed;
-		}
-
 		if(ClientPrefs.data.styleEngine == 'Psych')
 			FlxG.camera.followLerp = FlxMath.bound(elapsed * 9 / (FlxG.updateFramerate / 60), 0, 1);
 		checker.x -= 0.45 / (ClientPrefs.data.framerate / 60);
@@ -414,12 +415,12 @@ class MainMenuState extends MusicBeatState {
 
 		if (!selectedSomethin) {
 			if (controls.UI_UP_P) {
-				FlxG.sound.play(Paths.sound('scrollMenu'));
+				FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 				changeItem(-1);
 			}
 
 			if (controls.UI_DOWN_P) {
-				FlxG.sound.play(Paths.sound('scrollMenu'));
+				FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 				changeItem(1);
 			}
 
@@ -430,16 +431,16 @@ class MainMenuState extends MusicBeatState {
 
 			if(FlxG.mouse.wheel != 0)
 			{
-				FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+				FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 				changeItem(-FlxG.mouse.wheel);
 			}
 
 			if (controls.BACK || FlxG.mouse.justPressedRight) {
 				selectedSomethin = true;
-				FlxG.sound.play(Paths.sound('cancelMenu'));
+				FlxG.sound.play(PathsList.themeSound('cancelMenu'), ClientPrefs.data.soundVolume);
 				MusicBeatState.switchState(new TitleState());
 				if(ClientPrefs.data.styleEngine == 'MicUp') {
-					FlxTween.tween(FlxG.camera, {zoom: 3}, 0.6, {ease: FlxEase.expoIn});
+					FlxTween.tween(camGame, {zoom: 3}, 0.6, {ease: FlxEase.expoIn});
 					FlxTween.tween(bg, {angle: 35}, 0.6, {ease: FlxEase.expoIn});
 				}
 			}
@@ -468,7 +469,7 @@ class MainMenuState extends MusicBeatState {
 					}
 				} else {
 					selectedSomethin = true;
-					FlxG.sound.play(Paths.sound('confirmMenu'));
+					FlxG.sound.play(PathsList.themeSound('confirmMenu'), ClientPrefs.data.soundVolume);
 
 					if (ClientPrefs.data.flashing && ClientPrefs.data.styleEngine != 'MicUp')
 						FlxFlicker.flicker(magenta, 1.1, 0.15, false);
@@ -525,7 +526,7 @@ class MainMenuState extends MusicBeatState {
 								menuItems.forEach(function(spr:FlxSprite)
 								{
 									FlxTween.tween(bg, {angle: 45}, 0.8, {ease: FlxEase.expoIn});
-									FlxTween.tween(FlxG.camera, {zoom: 5}, 0.8, {ease: FlxEase.expoIn});
+									FlxTween.tween(camGame, {zoom: 5}, 0.8, {ease: FlxEase.expoIn});
 
 									FlxTween.tween(spr, {x: -600}, 0.6, {
 										ease: FlxEase.backIn,

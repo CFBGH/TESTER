@@ -29,17 +29,19 @@ import psychlua.LuaUtils;
 import tea.SScript;
 #end
 
+using flixel.util.FlxSpriteUtil;
+
 class PreloadState extends MusicBeatState {
     public var loadText:FlxText;
     public static var updateVersion:String = '';
 	var mustUpdate:Bool = false;
     private var luaDebugGroup:FlxTypedGroup<FlxText>;
+    private var PreloadArt:FlxSprite = new FlxSprite().loadGraphic(Paths.image("Preload/preloaderArt"));
+    private var Text0:Alphabet = new Alphabet(0, 0, "WARNING!");
+    private var Text:Alphabet = new Alphabet(0, 0, "THE OFFICIAL GAME BY");
     public var camOther:FlxCamera;
     private var GetInfo:Array<Dynamic> = [];
-    private var ISMODED:Bool = false;
-    #if ANDCHUCK
-    public static var listDir:Array<String> = [];
-    #end
+    public static var ISMODED:Bool = false;
 
     override public function create():Void {
         super.create();
@@ -54,26 +56,40 @@ class PreloadState extends MusicBeatState {
         luaDebugGroup = new FlxTypedGroup<FlxText>();
 	    luaDebugGroup.cameras = [camOther];
 	    add(luaDebugGroup);
-       
-        GetInfo.push(lime.app.Application.current.meta.get('file'));
-        GetInfo.push(lime.app.Application.current.meta.get('packageName'));
-        GetInfo.push(lime.app.Application.current.meta.get('company'));
-        GetInfo.push(lime.app.Application.current.meta.get('build'));
+
+        Text0.screenCenter();
+        Text0.y -= 250;
+        Text0.cameras = [camOther];
+        add(Text0);
+
+        Text.screenCenter();
+        Text.y -= 150;
+        Text.cameras = [camOther];
+        add(Text);
+
+        PreloadArt.screenCenter();
+        PreloadArt.y += 100;
+        PreloadArt.scale.x = 0.5;
+        PreloadArt.scale.y = 0.5;
+        PreloadArt.cameras = [camOther];
+        add(PreloadArt);
+        trace(lime.app.Application.current.meta);
+        GetInfo.push(lime.app.Application.current.meta.get("file"));
+        GetInfo.push(lime.app.Application.current.meta.get("packageName"));
+        GetInfo.push(lime.app.Application.current.meta.get("company"));
+        #if OFFICIAL
+        GetInfo.push("OBuildProject");
+        #else
+        GetInfo.push("lol");
+        #end
+
         for(i in 0...GetInfo.length) {
             if(Main.MainInfos[i] == GetInfo[i]) trace('Done');
-            else trace('error!');
+            else {
+                trace('error!');
+                ISMODED = true;
+            }
         }
-
-	#if android
-	FlxG.android.preventDefaultKeys = [BACK];
-	removeVirtualPad();
-	noCheckPress();
-	#end
-
-        #if ANDCHUCK
-        listDir = FileSystem.readDirectory('./');
-        trace(listDir);
-        #end
 
         if (!sys.FileSystem.exists(Sys.getCwd() + "/assets/replays")) {
 			sys.FileSystem.createDirectory(Sys.getCwd() + "/assets/replays");
@@ -100,10 +116,8 @@ class PreloadState extends MusicBeatState {
         if(!ClientPrefs.data.fullscr) FlxG.resizeWindow(Std.parseInt(any0[0]), Std.parseInt(any0[1]));
         #end
         FlxG.resizeGame(Std.parseInt(any0[0]), Std.parseInt(any0[1]));
-
         FlxG.fullscreen = ClientPrefs.data.fullscr;
-
-		FlxG.mouse.useSystemCursor = ClientPrefs.data.um;
+        reloadMouseGraphics();
         var timer2 = new haxe.Timer(2000);
         timer2.run = function() { addText(language.States.Preload.text5);
 
@@ -143,9 +157,26 @@ class PreloadState extends MusicBeatState {
 		#end
         timer2.stop();}
 
-        var timer = new haxe.Timer(2000); // 2000ms delay
+        var timer = new haxe.Timer(5000); // 2000ms delay
         timer.run = function() { if (mustUpdate) MusicBeatState.switchState(new OutdatedState());
                                  else FlxG.switchState(new TitleState()); timer.stop(); }
+    }
+
+    public static function reloadMouseGraphics() {
+        if(ClientPrefs.data.um == 'HaxeFlixel') {
+            FlxG.mouse.useSystemCursor = false;
+            FlxG.mouse.unload();
+        } else if(ClientPrefs.data.um == 'Windows System') {
+            FlxG.mouse.useSystemCursor = true;
+            FlxG.mouse.unload();
+        } else if(ClientPrefs.data.um == 'Custom') {
+            var mouse = new FlxSprite();
+            mouse.loadGraphic(Paths.image("Preload/cursor"));
+            //mouse.drawCircle();
+
+            FlxG.mouse.useSystemCursor = false;
+            FlxG.mouse.load(mouse.pixels);
+        }
     }
 
     public function addText(text:String, ?color:FlxColor = FlxColor.WHITE) {

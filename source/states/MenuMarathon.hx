@@ -1,6 +1,5 @@
 package states;
 
-import haxe.Json;
 import backend.WeekData;
 import backend.Highscore;
 import backend.Song;
@@ -11,12 +10,7 @@ import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxGradient;
-import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.math.FlxMath;
-import flixel.text.FlxText;
-import flixel.util.FlxColor;
 import flixel.addons.display.FlxBackdrop;
 import substates.Marathon_Substate;
 
@@ -55,12 +49,21 @@ class MenuMarathon extends MusicBeatState
 	var intendedScore:Int = 0;
 
 	var tracksUsed:FlxText;
-
+	private var camGame:FlxCamera;
+	public var camOther:FlxCamera;
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	var sprDifficulty:FlxSprite;
 
 	override function create()
 	{
+		camGame = new FlxCamera();
+		camOther = new FlxCamera();
+		camOther.bgColor.alpha = 0;
+		
+		FlxG.cameras.add(camOther, false);
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.setDefaultDrawTarget(camGame, true);
+		CustomFadeTransition.nextCamera = camOther;
 		substated = false;
 
 		PlayState.isStoryMode = false;
@@ -162,18 +165,27 @@ class MenuMarathon extends MusicBeatState
 			selectable = true;
 		});
 
+		#if android
+		addVirtualPad(UP_DOWN, A_B);
+		#else
+		if(ClientPrefs.data.tabletmode)
+			addVirtualPad(UP_DOWN, A_B);
+		#end
+
 		super.create();
+		CustomFadeTransition.nextCamera = camOther;
 		side.y = FlxG.height;
 		FlxTween.tween(side, {y: FlxG.height - side.height}, 0.6, {ease: FlxEase.quartInOut});
 
 		FlxTween.tween(bg, {alpha: 1}, 0.8, {ease: FlxEase.quartInOut});
-		FlxG.camera.zoom = 0.6;
-		FlxG.camera.alpha = 0;
-		FlxTween.tween(FlxG.camera, {zoom: 1, alpha: 1}, 0.7, {ease: FlxEase.quartInOut});
+		camGame.zoom = 0.6;
+		camGame.alpha = 0;
+		FlxTween.tween(camGame, {zoom: 1, alpha: 1}, 0.7, {ease: FlxEase.quartInOut});
 	}
 
 	override function update(elapsed:Float)
 	{
+		var isTab:Bool = ClientPrefs.data.tabletmode;
 		checker.x -= -0.67 / (ClientPrefs.data.framerate / 60);
 		checker.y -= 0.2 / (ClientPrefs.data.framerate / 60);
 
@@ -203,10 +215,10 @@ class MenuMarathon extends MusicBeatState
 
 		scoreText.text = "PERSONAL BEST:" + lerpScore;
 
-		var upP = controls.UI_UP_P;
-		var downP = controls.UI_DOWN_P;
-		var accepted = controls.ACCEPT;
-		var back = controls.BACK;
+		var upP = controls.UI_UP_P || (isTab && MusicBeatState._virtualpad.buttonUp.justPressed);
+		var downP = controls.UI_DOWN_P || (isTab && MusicBeatState._virtualpad.buttonDown.justPressed);
+		var accepted = controls.ACCEPT || (isTab && MusicBeatState._virtualpad.buttonA.justPressed);
+		var back = controls.BACK || (isTab && MusicBeatState._virtualpad.buttonB.justPressed);
 
 		if (!substated && selectable)
 		{
@@ -215,16 +227,16 @@ class MenuMarathon extends MusicBeatState
 			if (downP)
 				changeSelection(1);
 
-			if (controls.UI_LEFT_P)
+			if (controls.UI_LEFT_P || (isTab && MusicBeatState._virtualpad.buttonLeft.justPressed))
 				changeDiff(-1);
-			if (controls.UI_RIGHT_P)
+			if (controls.UI_RIGHT_P || (isTab && MusicBeatState._virtualpad.buttonRight.justPressed))
 				changeDiff(1);
 
 			if (back)
 			{
 				substated = true;
-
-				FlxG.sound.play(Paths.sound('cancelMenu'));
+				#if android removeVirtualPad(); #else if(ClientPrefs.data.tabletmode) removeVirtualPad(); #end
+				FlxG.sound.play(PathsList.themeSound('cancelMenu'), ClientPrefs.data.soundVolume);
 
 				FlxG.state.openSubState(new Marathon_Substate());
 			}
@@ -234,7 +246,7 @@ class MenuMarathon extends MusicBeatState
 				PlayState.difficultyPlaylist.push(Std.string(curDifficulty));
 				PlayState.storyPlaylist.push(Std.string(songs[curSelected].songName.toLowerCase()));
 
-				FlxG.sound.play(Paths.sound('confirmMenu'));
+				FlxG.sound.play(PathsList.themeSound('confirmMenu'), ClientPrefs.data.soundVolume);
 
 				saveCurrent();
 			}
@@ -293,7 +305,7 @@ class MenuMarathon extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{
 		// NGio.logEvent('Fresh');
-		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+		FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 
 		curSelected += change;
 

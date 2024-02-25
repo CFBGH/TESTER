@@ -12,7 +12,7 @@ import haxe.Json;
 
 import flixel.util.FlxSpriteUtil;
 import objects.AttachedSprite;
-import options.ModSettingsSubState;
+import lib.ModSettingsSubState;
 import flixel.addons.transition.FlxTransitionableState;
 
 class ModsMenuState extends MusicBeatState
@@ -123,7 +123,7 @@ class ModsMenuState extends MusicBeatState
 			}
 			updateModDisplayData();
 			checkToggleButtons();
-			FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+			FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 		});
 		buttonEnableAll.bg.color = FlxColor.GREEN;
 		buttonEnableAll.focusChangeCallback = function(focus:Bool) if(!focus) buttonEnableAll.bg.color = FlxColor.GREEN;
@@ -143,7 +143,7 @@ class ModsMenuState extends MusicBeatState
 			}
 			updateModDisplayData();
 			checkToggleButtons();
-			FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+			FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 		});
 		buttonDisableAll.bg.color = 0xFFFF6666;
 		buttonDisableAll.focusChangeCallback = function(focus:Bool) if(!focus) buttonDisableAll.bg.color = 0xFFFF6666;
@@ -267,7 +267,7 @@ class ModsMenuState extends MusicBeatState
 			if(curMod.mustRestart) waitingToRestart = true;
 			updateModDisplayData();
 			checkToggleButtons();
-			FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+			FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 		}, 54, 54);
 		button.icon.animation.add('icon', [4]);
 		button.icon.animation.play('icon', true);
@@ -288,6 +288,13 @@ class ModsMenuState extends MusicBeatState
 		add(modsGroup);
 		_lastControllerMode = controls.controllerMode;
 
+		#if android
+		addVirtualPad(UP_DOWN, A_B);
+		#else
+		if(ClientPrefs.data.tabletmode)
+			addVirtualPad(UP_DOWN, A_B);
+		#end
+
 		changeSelectedMod();
 		super.create();
 	}
@@ -302,14 +309,15 @@ class ModsMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if(controls.BACK && hoveringOnMods)
+		var isTab:Bool = ClientPrefs.data.tabletmode;
+		if((controls.BACK || (isTab && MusicBeatState._virtualpad.buttonB.justPressed)) && hoveringOnMods)
 		{
 			if(colorTween != null) {
 				colorTween.cancel();
 			}
 			saveTxt();
 
-			FlxG.sound.play(Paths.sound('cancelMenu'));
+			FlxG.sound.play(PathsList.themeSound('cancelMenu'), ClientPrefs.data.soundVolume);
 			if(waitingToRestart)
 			{
 				//MusicBeatState.switchState(new TitleState());
@@ -340,7 +348,7 @@ class ModsMenuState extends MusicBeatState
 			_lastControllerMode = controls.controllerMode;
 		}
 
-		if(controls.UI_DOWN_R || controls.UI_UP_R) holdTime = 0;
+		if(controls.UI_DOWN_R || controls.UI_UP_R || (isTab && MusicBeatState._virtualpad.buttonUp.justReleased) || (isTab && MusicBeatState._virtualpad.buttonDown.justReleased)) holdTime = 0;
 
 		if(modsList.all.length > 0)
 		{
@@ -380,9 +388,9 @@ class ModsMenuState extends MusicBeatState
 				if(hoveringOnMods)
 				{
 					var shiftMult:Int = (FlxG.keys.pressed.SHIFT || FlxG.gamepads.anyPressed(LEFT_SHOULDER) || FlxG.gamepads.anyPressed(RIGHT_SHOULDER)) ? 4 : 1;
-					if(controls.UI_DOWN_P)
+					if(controls.UI_DOWN_P || (isTab && MusicBeatState._virtualpad.buttonDown.justPressed))
 						changeSelectedMod(shiftMult);
-					else if(controls.UI_UP_P)
+					else if(controls.UI_UP_P || (isTab && MusicBeatState._virtualpad.buttonUp.justPressed))
 						changeSelectedMod(-shiftMult);
 					else if(FlxG.mouse.wheel != 0)
 						changeSelectedMod(-FlxG.mouse.wheel * shiftMult, true);
@@ -393,11 +401,11 @@ class ModsMenuState extends MusicBeatState
 						else curSelectedMod = 0;
 						changeSelectedMod();
 					}
-					else if(controls.UI_UP || controls.UI_DOWN)
+					else if(controls.UI_UP || controls.UI_DOWN || (isTab && MusicBeatState._virtualpad.buttonUp.pressed) || (isTab && MusicBeatState._virtualpad.buttonDown.pressed))
 					{
 						var lastHoldTime:Float = holdTime;
 						holdTime += elapsed;
-						if(holdTime > 0.5 && Math.floor(lastHoldTime * 8) != Math.floor(holdTime * 8)) changeSelectedMod(shiftMult * (controls.UI_UP ? -1 : 1));
+						if(holdTime > 0.5 && Math.floor(lastHoldTime * 8) != Math.floor(holdTime * 8)) changeSelectedMod(shiftMult * ((controls.UI_UP || (isTab && MusicBeatState._virtualpad.buttonUp.pressed)) ? -1 : 1));
 					}
 					else if(FlxG.mouse.pressed && !gottaClickAgain)
 					{
@@ -471,14 +479,14 @@ class ModsMenuState extends MusicBeatState
 				}
 				else 
 				{
-					if(controls.BACK)
+					if(controls.BACK || (isTab && MusicBeatState._virtualpad.buttonB.justPressed))
 					{
 						hoveringOnMods = true;
 						var button = getButton();
 						button.ignoreCheck = button.onFocus = false;
 						changeSelectedMod();
 					}
-					else if(controls.ACCEPT)
+					else if(controls.ACCEPT || (isTab && MusicBeatState._virtualpad.buttonA.justPressed))
 					{
 						var button = getButton();
 						if(button.onClick != null) button.onClick();
@@ -580,7 +588,7 @@ class ModsMenuState extends MusicBeatState
 			bgButtons.alpha = 0.8;
 		}
 
-		FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+		FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 	}
 
 	function getButton()
@@ -645,7 +653,7 @@ class ModsMenuState extends MusicBeatState
 		holdingElapsed = 0;
 		gottaClickAgain = true;
 		updateModDisplayData();
-		FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+		FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 		
 		if(hoveringOnMods)
 		{
@@ -753,7 +761,7 @@ class ModsMenuState extends MusicBeatState
 			var curMod:ModItem = modsGroup.members[curSelectedMod];
 			if(curMod != null) curMod.selectBg.visible = false;
 		}
-		FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+		FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 	}
 
 	function checkToggleButtons()

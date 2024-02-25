@@ -34,9 +34,19 @@ class MenuEndless extends MusicBeatState
 	var intendedScore:Int = 0;
 
 	private var grpSongs:FlxTypedGroup<MicAlphabet>;
+	private var camGame:FlxCamera;
+	public var camOther:FlxCamera;
 
 	override function create()
 	{
+		camGame = new FlxCamera();
+		camOther = new FlxCamera();
+		camOther.bgColor.alpha = 0;
+		
+		FlxG.cameras.add(camOther, false);
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.setDefaultDrawTarget(camGame, true);
+		CustomFadeTransition.nextCamera = camOther;
 		substated = false;
 
 		lime.app.Application.current.window.title = lime.app.Application.current.meta.get('name');
@@ -105,9 +115,9 @@ class MenuEndless extends MusicBeatState
 		FlxTween.tween(side, {x: 0}, 0.6, {ease: FlxEase.quartInOut});
 
 		FlxTween.tween(bg, {alpha: 1}, 0.8, {ease: FlxEase.quartInOut});
-		FlxG.camera.zoom = 0.6;
-		FlxG.camera.alpha = 0;
-		FlxTween.tween(FlxG.camera, {zoom: 1, alpha: 1}, 0.7, {ease: FlxEase.quartInOut});
+		camGame.zoom = 0.6;
+		camGame.alpha = 0;
+		FlxTween.tween(camGame, {zoom: 1, alpha: 1}, 0.7, {ease: FlxEase.quartInOut});
 
 		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
 		scoreText.setFormat(Language.fonts(), 32, FlxColor.WHITE, RIGHT);
@@ -127,11 +137,20 @@ class MenuEndless extends MusicBeatState
 			selectable = true;
 		});
 
+		#if android
+		addVirtualPad(UP_DOWN, A_B);
+		#else
+		if(ClientPrefs.data.tabletmode)
+			addVirtualPad(UP_DOWN, A_B);
+		#end
+
 		super.create();
+		CustomFadeTransition.nextCamera = camOther;
 	}
 
 	override function update(elapsed:Float)
 	{
+		var isTab:Bool = ClientPrefs.data.tabletmode;
 		checker.x -= 0.27 / (ClientPrefs.data.framerate / 60);
 		checker.y -= -0.2 / (ClientPrefs.data.framerate / 60);
 
@@ -167,10 +186,10 @@ class MenuEndless extends MusicBeatState
 
 		scoreText.text = "PERSONAL BEST:\n" + lerpScore;
 
-		var upP = controls.UI_UP_P;
-		var downP = controls.UI_DOWN_P;
-		var accepted = controls.ACCEPT;
-		var back = controls.BACK;
+		var upP = controls.UI_UP_P || (isTab && MusicBeatState._virtualpad.buttonUp.justPressed);
+		var downP = controls.UI_DOWN_P || (isTab && MusicBeatState._virtualpad.buttonDown.justPressed);
+		var accepted = controls.ACCEPT || (isTab && MusicBeatState._virtualpad.buttonA.justPressed);
+		var back = controls.BACK || (isTab && MusicBeatState._virtualpad.buttonB.justPressed);
 
 		if (!substated && selectable && !goingBack && !substated)
 		{
@@ -183,19 +202,19 @@ class MenuEndless extends MusicBeatState
 			{
 				MusicBeatState.switchState(new PlaySelection());
 				goingBack = true;
-				FlxTween.tween(FlxG.camera, {zoom: 0.6, alpha: -0.6}, 0.7, {ease: FlxEase.quartInOut});
+				FlxTween.tween(camGame, {zoom: 0.6, alpha: -0.6}, 0.7, {ease: FlxEase.quartInOut});
 				FlxTween.tween(bg, {alpha: 0}, 0.7, {ease: FlxEase.quartInOut});
 				FlxTween.tween(checker, {alpha: 0}, 0.3, {ease: FlxEase.quartInOut});
 				FlxTween.tween(gradientBar, {alpha: 0}, 0.3, {ease: FlxEase.quartInOut});
 				FlxTween.tween(side, {x: -500 - side.width}, 0.3, {ease: FlxEase.quartInOut});
 				FlxTween.tween(scoreText, {alpha: 0}, 0.3, {ease: FlxEase.quartInOut});
 
-				FlxG.sound.play(Paths.sound('cancelMenu'));
+				FlxG.sound.play(PathsList.themeSound('cancelMenu'), ClientPrefs.data.soundVolume);
 			}
 
 			if (accepted)
 			{
-				FlxG.sound.play(Paths.sound('confirmMenu'));
+				FlxG.sound.play(PathsList.themeSound('confirmMenu'), ClientPrefs.data.soundVolume);
 
 				Endless_Substate.song = songs[curSelected].songName.toLowerCase();
 
@@ -218,7 +237,7 @@ class MenuEndless extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{
 		// NGio.logEvent('Fresh');
-		FlxG.sound.play(Paths.sound('scrollMenu'));
+		FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 
 		curSelected += change;
 

@@ -117,6 +117,14 @@ class AchievementsMenuState extends MusicBeatState
 		add(nameText);
 		
 		_changeSelection();
+
+		#if android
+		addVirtualPad(FULL, A_B);
+		#else
+		if(ClientPrefs.data.tabletmode)
+			addVirtualPad(FULL, B);
+		#end
+
 		super.create();
 		
 		FlxG.camera.follow(camFollow, null, 0.15);
@@ -144,11 +152,12 @@ class AchievementsMenuState extends MusicBeatState
 
 	var goingBack:Bool = false;
 	override function update(elapsed:Float) {
+		var isTab = ClientPrefs.data.tabletmode;
 		if(!goingBack && options.length > 1)
 		{
 			var add:Int = 0;
-			if (controls.UI_LEFT_P) add = -1;
-			else if (controls.UI_RIGHT_P) add = 1;
+			if (controls.UI_LEFT_P || (isTab && MusicBeatState._virtualpad.buttonLeft.justPressed)) add = -1;
+			else if (controls.UI_RIGHT_P || (isTab && MusicBeatState._virtualpad.buttonRight.justPressed)) add = 1;
 
 			if(add != 0)
 			{
@@ -170,8 +179,8 @@ class AchievementsMenuState extends MusicBeatState
 			if(options.length > MAX_PER_ROW)
 			{
 				var add:Int = 0;
-				if (controls.UI_UP_P) add = -1;
-				else if (controls.UI_DOWN_P) add = 1;
+				if (controls.UI_UP_P || (isTab && MusicBeatState._virtualpad.buttonUp.justPressed)) add = -1;
+				else if (controls.UI_DOWN_P || (isTab && MusicBeatState._virtualpad.buttonDown.justPressed)) add = 1;
 
 				if(add != 0)
 				{
@@ -194,14 +203,14 @@ class AchievementsMenuState extends MusicBeatState
 				}
 			}
 			
-			if(controls.RESET && (options[curSelected].unlocked || options[curSelected].curProgress > 0))
+			if((controls.RESET || (isTab && MusicBeatState._virtualpad.buttonA.justPressed)) && (options[curSelected].unlocked || options[curSelected].curProgress > 0))
 			{
 				openSubState(new ResetAchievementSubstate());
 			}
 		}
 
-		if (controls.BACK) {
-			FlxG.sound.play(Paths.sound('cancelMenu'));
+		if (controls.BACK || (isTab && MusicBeatState._virtualpad.buttonB.justPressed)) {
+			FlxG.sound.play(PathsList.themeSound('cancelMenu'), ClientPrefs.data.soundVolume);
 			MusicBeatState.switchState(new MainMenuState());
 			goingBack = true;
 		}
@@ -211,7 +220,7 @@ class AchievementsMenuState extends MusicBeatState
 	public var barTween:FlxTween = null;
 	function _changeSelection()
 	{
-		FlxG.sound.play(Paths.sound('scrollMenu'));
+		FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 		var hasProgress = options[curSelected].maxProgress > 0;
 		nameText.text = options[curSelected].displayName;
 		descText.text = options[curSelected].description;
@@ -247,7 +256,7 @@ class AchievementsMenuState extends MusicBeatState
 	}
 }
 
-class ResetAchievementSubstate extends MusicBeatSubstate
+class ResetAchievementSubstate extends MusicBeatSubState
 {
 	var onYes:Bool = false;
 	var yesText:Alphabet;
@@ -294,7 +303,7 @@ class ResetAchievementSubstate extends MusicBeatSubstate
 		if(controls.BACK)
 		{
 			close();
-			FlxG.sound.play(Paths.sound('cancelMenu'));
+			FlxG.sound.play(PathsList.themeSound('cancelMenu'), ClientPrefs.data.soundVolume);
 			return;
 		}
 
@@ -332,7 +341,7 @@ class ResetAchievementSubstate extends MusicBeatSubstate
 				Achievements.save();
 				FlxG.save.flush();
 
-				FlxG.sound.play(Paths.sound('cancelMenu'));
+				FlxG.sound.play(PathsList.themeSound('cancelMenu'), ClientPrefs.data.soundVolume);
 			}
 			close();
 			return;
@@ -348,7 +357,7 @@ class ResetAchievementSubstate extends MusicBeatSubstate
 		yesText.scale.set(scales[confirmInt], scales[confirmInt]);
 		noText.alpha = alphas[1 - confirmInt];
 		noText.scale.set(scales[1 - confirmInt], scales[1 - confirmInt]);
-		FlxG.sound.play(Paths.sound('scrollMenu'));
+		FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 	}
 }
 #end

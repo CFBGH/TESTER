@@ -1,6 +1,5 @@
 package states;
 
-import haxe.Json;
 import backend.WeekData;
 import backend.Highscore;
 import backend.Song;
@@ -42,11 +41,20 @@ class MenuSurvival extends MusicBeatState
 
 	public static var substated:Bool = false;
 	public static var no:Bool = false;
-
+	private var camGame:FlxCamera;
+	public var camOther:FlxCamera;
 	var tracksUsed:FlxText;
 
     override function create()
     {
+		camGame = new FlxCamera();
+		camOther = new FlxCamera();
+		camOther.bgColor.alpha = 0;
+		
+		FlxG.cameras.add(camOther, false);
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.setDefaultDrawTarget(camGame, true);
+		CustomFadeTransition.nextCamera = camOther;
 		substated = false;
 		no = false;
 
@@ -138,13 +146,21 @@ class MenuSurvival extends MusicBeatState
 			selectable = true;
 		});
 
+		#if android
+		addVirtualPad(UP_DOWN, A_B);
+		#else
+		if(ClientPrefs.data.tabletmode)
+			addVirtualPad(UP_DOWN, A_B);
+		#end
+
 		super.create();
+		CustomFadeTransition.nextCamera = camOther;
 
 		FlxTween.tween(bg, {alpha: 1}, 0.8, {ease: FlxEase.quartInOut});
 		FlxTween.tween(side, {x: 0}, 0.8, {ease: FlxEase.quartInOut});
-		FlxG.camera.zoom = 0.6;
-		FlxG.camera.alpha = 0;
-		FlxTween.tween(FlxG.camera, {zoom: 1, alpha: 1}, 0.7, {ease: FlxEase.quartInOut});
+		camGame.zoom = 0.6;
+		camGame.alpha = 0;
+		FlxTween.tween(camGame, {zoom: 1, alpha: 1}, 0.7, {ease: FlxEase.quartInOut});
     }
 
 	var score = Std.int(FlxG.save.data.survivalScore);
@@ -154,6 +170,7 @@ class MenuSurvival extends MusicBeatState
 
     override function update(elapsed:Float)
     {
+		var isTab:Bool = ClientPrefs.data.tabletmode;
         checker.x -= -0.67 / (ClientPrefs.data.framerate/60);
 		checker.y -= 0.2 / (ClientPrefs.data.framerate/60);
 
@@ -176,10 +193,10 @@ class MenuSurvival extends MusicBeatState
 				item.x += -45/(ClientPrefs.data.framerate / 60);
 		}
 
-        var upP = controls.UI_UP_P;
-		var downP = controls.UI_DOWN_P;
-		var accepted = controls.ACCEPT;
-		var back = controls.BACK;
+        var upP = controls.UI_UP_P || (isTab && MusicBeatState._virtualpad.buttonUp.justPressed);
+		var downP = controls.UI_DOWN_P || (isTab && MusicBeatState._virtualpad.buttonDown.justPressed);
+		var accepted = controls.ACCEPT || (isTab && MusicBeatState._virtualpad.buttonA.justPressed);
+		var back = controls.BACK || (isTab && MusicBeatState._virtualpad.buttonB.justPressed);
 
 		if (selectable && !substated)
 		{
@@ -197,7 +214,7 @@ class MenuSurvival extends MusicBeatState
 				{
 					substated = true;
 	
-					FlxG.sound.play(Paths.sound('cancelMenu'));
+					FlxG.sound.play(PathsList.themeSound('cancelMenu'), ClientPrefs.data.soundVolume);
 	
 					FlxG.state.openSubState(new Survival_Substate());
 				}
@@ -209,7 +226,7 @@ class MenuSurvival extends MusicBeatState
 						PlayState.difficultyPlaylist.push(Std.string(curDifficulty));
 						PlayState.storyPlaylist.push(Std.string(songs[curSelected].songName.toLowerCase()));
 		
-						FlxG.sound.play(Paths.sound('confirmMenu'));
+						FlxG.sound.play(PathsList.themeSound('confirmMenu'), ClientPrefs.data.soundVolume);
 		
 						saveCurrent();
 					}
@@ -265,7 +282,7 @@ class MenuSurvival extends MusicBeatState
     function changeSelection(change:Int = 0)
     {
         // NGio.logEvent('Fresh');
-        FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+        FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
     
         curSelected += change;
     

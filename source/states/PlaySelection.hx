@@ -20,6 +20,7 @@ class PlaySelection extends MusicBeatState
 	public static var curSelected:Int = 0;
 
 	private var camGame:FlxCamera;
+	public var camOther:FlxCamera;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
@@ -36,8 +37,12 @@ class PlaySelection extends MusicBeatState
 	override function create()
 	{
 		camGame = new FlxCamera();
+		camOther = new FlxCamera();
+		camOther.bgColor.alpha = 0;
+		FlxG.cameras.add(camOther, false);
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
+		CustomFadeTransition.nextCamera = camOther;
 
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
@@ -97,13 +102,21 @@ class PlaySelection extends MusicBeatState
 
 		changeItem();
 
+		#if android
+		addVirtualPad(LEFT_RIGHT, A_B);
+		#else
+		if(ClientPrefs.data.tabletmode)
+			addVirtualPad(LEFT_RIGHT, A_B);
+		#end
+
 		super.create();
+		CustomFadeTransition.nextCamera = camOther;
 
 		FlxG.camera.follow(camFollow, null, camLerp);
 
-		FlxG.camera.zoom = 3;
+		camGame.zoom = 3;
 		side.alpha = checker.alpha = 0;
-		FlxTween.tween(FlxG.camera, { zoom: 1}, 1.2, { ease: FlxEase.expoInOut });
+		FlxTween.tween(camGame, { zoom: 1}, 1.2, { ease: FlxEase.expoInOut });
 		FlxTween.tween(bg, { y:-30}, 1, { ease: FlxEase.quartInOut,});
 		FlxTween.tween(side, { alpha:1}, 1, { ease: FlxEase.quartInOut});
 		FlxTween.tween(checker, { alpha:1}, 1.15, { ease: FlxEase.quartInOut});
@@ -119,7 +132,7 @@ class PlaySelection extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-
+		var isTab:Bool = ClientPrefs.data.tabletmode;
 		menuItems.forEach(function(spr:FlxSprite)
 			{
 				spr.scale.set(FlxMath.lerp(spr.scale.x, 0.5, 0.4/(ClientPrefs.data.framerate/60)), FlxMath.lerp(spr.scale.y, 0.5, 0.07/(ClientPrefs.data.framerate/60)));
@@ -140,38 +153,38 @@ class PlaySelection extends MusicBeatState
 
 		if (!selectedSomethin && selectable)
 		{
-			if (controls.UI_LEFT_P)
+			if (controls.UI_LEFT_P || (isTab && MusicBeatState._virtualpad.buttonLeft.justPressed))
 			{
-				FlxG.sound.play(Paths.sound('scrollMenu'));
+				FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 				changeItem(-1);
 			}
 
-			if (controls.UI_RIGHT_P)
+			if (controls.UI_RIGHT_P || (isTab && MusicBeatState._virtualpad.buttonRight.justPressed))
 			{
-				FlxG.sound.play(Paths.sound('scrollMenu'));
+				FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 				changeItem(1);
 			}
 
-			if (controls.BACK || FlxG.mouse.justPressedRight)
+			if (controls.BACK || FlxG.mouse.justPressedRight || (isTab && MusicBeatState._virtualpad.buttonB.justPressed))
 			{
 				selectedSomethin = true;
-			FlxG.sound.play(Paths.sound('cancelMenu'));
+				FlxG.sound.play(PathsList.themeSound('cancelMenu'), ClientPrefs.data.soundVolume);
 
-				FlxTween.tween(FlxG.camera, { zoom: 2}, 0.4, { ease: FlxEase.expoIn});
+				FlxTween.tween(camGame, { zoom: 2}, 0.4, { ease: FlxEase.expoIn});
 				FlxTween.tween(bg, { y: 0-bg.height}, 0.4, { ease: FlxEase.expoIn });
 				FlxTween.tween(side, { alpha:0}, 0.4, { ease: FlxEase.quartInOut});
 				FlxTween.tween(checker, { alpha:0}, 0.4, { ease: FlxEase.quartInOut});
 				MusicBeatState.switchState(new MainMenuState());
 			}
 
-			if (controls.ACCEPT || FlxG.mouse.justPressed)
+			if (controls.ACCEPT || FlxG.mouse.justPressed || (isTab && MusicBeatState._virtualpad.buttonA.justPressed))
 			{
 				selectedSomethin = true;
-				FlxG.sound.play(Paths.sound('confirmMenu'));
+				FlxG.sound.play(PathsList.themeSound('confirmMenu'), ClientPrefs.data.soundVolume);
 
 				menuItems.forEach(function(spr:FlxSprite)
 				{
-					FlxTween.tween(FlxG.camera, { zoom: 12}, 0.8, { ease: FlxEase.expoIn, startDelay: 0.4});
+					FlxTween.tween(camGame, { zoom: 12}, 0.8, { ease: FlxEase.expoIn, startDelay: 0.4});
 					FlxTween.tween(bg, { y: 0-bg.height}, 1.6, { ease: FlxEase.expoIn });
 					FlxTween.tween(side, { alpha:0}, 0.6, { ease: FlxEase.quartInOut, startDelay: 0.3});
 					FlxTween.tween(checker, { alpha:0}, 0.6, { ease: FlxEase.quartInOut, startDelay: 0.3});

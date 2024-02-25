@@ -39,6 +39,8 @@ class MenuModifiers extends MusicBeatState
 	var niceText:FlxText = new FlxText(20, 69, FlxG.width, "", 48);
 
 	public static var modifierList:Array<ModifierData>;
+	private var camGame:FlxCamera;
+	public var camOther:FlxCamera;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 	var menuChecks:FlxTypedGroup<FlxSprite>;
@@ -58,6 +60,14 @@ class MenuModifiers extends MusicBeatState
 
     override function create()
     {
+		camGame = new FlxCamera();
+		camOther = new FlxCamera();
+		camOther.bgColor.alpha = 0;
+		
+		FlxG.cameras.add(camOther, false);
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.setDefaultDrawTarget(camGame, true);
+		CustomFadeTransition.nextCamera = camOther;
 		substated = false;
 
 		lime.app.Application.current.window.title = lime.app.Application.current.meta.get('name');
@@ -134,6 +144,7 @@ class MenuModifiers extends MusicBeatState
         explain.setBorderStyle(OUTLINE, 0xFF000000, 5, 1);
 
         super.create();
+		CustomFadeTransition.nextCamera = camOther;
 		changeItem();
 
 		niceText.setFormat("VCR OSD Mono", 52, FlxColor.WHITE, CENTER);
@@ -152,9 +163,9 @@ class MenuModifiers extends MusicBeatState
 		FlxTween.tween(side, {y:FlxG.height-side.height}, 0.6, {ease: FlxEase.quartInOut});
 
 		FlxTween.tween(bg, { alpha:1}, 0.8, { ease: FlxEase.quartInOut});
-		FlxG.camera.zoom = 0.6;
-		FlxG.camera.alpha = 0;
-		FlxTween.tween(FlxG.camera, { zoom:1, alpha:1}, 0.7, { ease: FlxEase.quartInOut});
+		camGame.zoom = 0.6;
+		camGame.alpha = 0;
+		FlxTween.tween(camGame, { zoom:1, alpha:1}, 0.7, { ease: FlxEase.quartInOut});
 
 		new FlxTimer().start(0.7, function(tmr:FlxTimer)
 			{
@@ -281,7 +292,7 @@ class MenuModifiers extends MusicBeatState
 				{
 					FlxG.switchState(new PlaySelection());	
 
-					FlxTween.tween(FlxG.camera, { zoom:0.6, alpha:-0.6}, 0.8, { ease: FlxEase.quartInOut});
+					FlxTween.tween(camGame, { zoom:0.6, alpha:-0.6}, 0.8, { ease: FlxEase.quartInOut});
 					FlxTween.tween(bg, { alpha:0}, 0.8, { ease: FlxEase.quartInOut});
 					FlxTween.tween(checker, { alpha:0}, 0.3, { ease: FlxEase.quartInOut});
 					FlxTween.tween(gradientBar, { alpha:0}, 0.3, { ease: FlxEase.quartInOut});

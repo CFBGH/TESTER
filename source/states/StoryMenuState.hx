@@ -172,6 +172,13 @@ class StoryMenuState extends MusicBeatState
 		changeWeek();
 		changeDifficulty();
 
+		#if android
+		addVirtualPad(FULL, A_B_X_Y);
+		#else
+		if(ClientPrefs.data.tabletmode)
+			addVirtualPad(FULL, A_B_X_Y);
+		#end
+
 		super.create();
 	}
 
@@ -183,6 +190,7 @@ class StoryMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		var isTab = ClientPrefs.data.tabletmode;
 		// scoreText.setFormat('VCR OSD Mono', 32);
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, FlxMath.bound(elapsed * 30, 0, 1)));
 		lerpAcc = Math.abs(FlxMath.roundDecimal(FlxMath.lerp(lerpAcc, intendedAcc, FlxMath.bound(elapsed * 30, 0, 1)), 4));
@@ -214,64 +222,64 @@ class StoryMenuState extends MusicBeatState
 
 		if (!movedBack && !selectedWeek)
 		{
-			var upP = controls.UI_UP_P;
-			var downP = controls.UI_DOWN_P;
+			var upP = controls.UI_UP_P || (isTab && MusicBeatState._virtualpad.buttonUp.justPressed);
+			var downP = controls.UI_DOWN_P || (isTab && MusicBeatState._virtualpad.buttonDown.justPressed);
 			if (upP)
 			{
 				changeWeek(-1);
-				FlxG.sound.play(Paths.sound('scrollMenu'));
+				FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 			}
 
 			if (downP)
 			{
 				changeWeek(1);
-				FlxG.sound.play(Paths.sound('scrollMenu'));
+				FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 			}
 
 			if(FlxG.mouse.wheel != 0)
 			{
-				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+				FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 				changeWeek(-FlxG.mouse.wheel);
 				changeDifficulty();
 			}
 
-			if (controls.UI_RIGHT)
+			if (controls.UI_RIGHT || (isTab && MusicBeatState._virtualpad.buttonRight.pressed))
 				rightArrow.animation.play('press')
 			else
 				rightArrow.animation.play('idle');
 
-			if (controls.UI_LEFT)
+			if (controls.UI_LEFT || (isTab && MusicBeatState._virtualpad.buttonLeft.pressed))
 				leftArrow.animation.play('press');
 			else
 				leftArrow.animation.play('idle');
 
-			if (controls.UI_RIGHT_P)
+			if (controls.UI_RIGHT_P || (isTab && MusicBeatState._virtualpad.buttonRight.justPressed))
 				changeDifficulty(1);
-			else if (controls.UI_LEFT_P)
+			else if (controls.UI_LEFT_P || (isTab && MusicBeatState._virtualpad.buttonRight.justPressed))
 				changeDifficulty(-1);
 			else if (upP || downP)
 				changeDifficulty();
 
-			if(FlxG.keys.justPressed.CONTROL)
+			if(FlxG.keys.justPressed.CONTROL || (isTab && MusicBeatState._virtualpad.buttonC.justPressed))
 			{
 				persistentUpdate = false;
 				openSubState(new GameplayChangersSubstate());
 			}
-			else if(controls.RESET)
+			else if(controls.RESET || (isTab && MusicBeatState._virtualpad.buttonY.justPressed))
 			{
 				persistentUpdate = false;
 				openSubState(new ResetScoreSubState('', curDifficulty, '', curWeek));
 				//FlxG.sound.play(Paths.sound('scrollMenu'));
 			}
-			else if (controls.ACCEPT)
+			else if (controls.ACCEPT || (isTab && MusicBeatState._virtualpad.buttonA.justPressed))
 			{
 				selectWeek();
 			}
 		}
 
-		if (controls.BACK && !movedBack && !selectedWeek)
+		if ((controls.BACK || (isTab && MusicBeatState._virtualpad.buttonB.justPressed)) && !movedBack && !selectedWeek)
 		{
-			FlxG.sound.play(Paths.sound('cancelMenu'));
+			FlxG.sound.play(PathsList.themeSound('cancelMenu'), ClientPrefs.data.soundVolume);
 			movedBack = true;
 			if(ClientPrefs.data.styleEngine == 'MicUp')
 				MusicBeatState.switchState(new PlaySelection());
@@ -327,7 +335,7 @@ class StoryMenuState extends MusicBeatState
 			
 			if (stopspamming == false)
 			{
-				FlxG.sound.play(Paths.sound('confirmMenu'));
+				FlxG.sound.play(PathsList.themeSound('confirmMenu'), ClientPrefs.data.soundVolume);
 
 				grpWeekText.members[curWeek].isFlashing = true;
 				for (char in grpWeekCharacters.members)
@@ -347,7 +355,7 @@ class StoryMenuState extends MusicBeatState
 			});
 			
 		} else {
-			FlxG.sound.play(Paths.sound('cancelMenu'));
+			FlxG.sound.play(PathsList.themeSound('cancelMenu'), ClientPrefs.data.soundVolume);
 		}
 	}
 

@@ -67,11 +67,19 @@ class DonateState extends MusicBeatState {
 				curSelected = i;
 		}
 
+		#if android
+		addVirtualPad(UP_DOWN, A_B);
+		#else
+		if(ClientPrefs.data.tabletmode)
+			addVirtualPad(UP_DOWN, A_B);
+		#end
+
 		super.create();
 	}
 
 	var holdTime:Float = 0;
 	override function update(elapsed:Float) {
+		var isTab:Bool = ClientPrefs.data.tabletmode;
 		if (FlxG.sound.music.volume < 0.7) {
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
@@ -81,8 +89,8 @@ class DonateState extends MusicBeatState {
 			if (FlxG.keys.pressed.SHIFT)
 				shiftMult = 3;
 
-			var upP = controls.UI_UP_P;
-			var downP = controls.UI_DOWN_P;
+			var upP = controls.UI_UP_P || (isTab && MusicBeatState._virtualpad.buttonUp.justPressed);
+			var downP = controls.UI_DOWN_P || (isTab && MusicBeatState._virtualpad.buttonDown.justPressed);
 
 			if (upP) {
 				changeSelection(-shiftMult);
@@ -95,7 +103,7 @@ class DonateState extends MusicBeatState {
 
 			super.update(elapsed);
 			
-			if (controls.UI_DOWN || controls.UI_UP) {
+			if (controls.UI_DOWN || controls.UI_UP  || (isTab && MusicBeatState._virtualpad.buttonUp.pressed) || (isTab && MusicBeatState._virtualpad.buttonDown.pressed)) {
 				var checkLastHold:Int = Math.floor((holdTime - 0.5) * 10);
 				holdTime += elapsed;
 				var checkNewHold:Int = Math.floor((holdTime - 0.5) * 10);
@@ -106,12 +114,12 @@ class DonateState extends MusicBeatState {
 			}
 		}
 		
-		if (controls.BACK) {
-			FlxG.sound.play(Paths.sound('cancelMenu'));
+		if (controls.BACK || (isTab && MusicBeatState._virtualpad.buttonB.justPressed)) {
+			FlxG.sound.play(PathsList.themeSound('cancelMenu'), ClientPrefs.data.soundVolume);
 			MusicBeatState.switchState(new MainMenuState());
 		}
 
-		if (controls.ACCEPT && (donateMenu[curSelected][1] == null || donateMenu[curSelected][1].length > 4)) {
+		if ((controls.ACCEPT || (isTab && MusicBeatState._virtualpad.buttonUp.justPressed)) && (donateMenu[curSelected][1] == null || donateMenu[curSelected][1].length > 4)) {
 			CoolUtil.browserLoad(donateMenu[curSelected][1]);
 		}
 	}
@@ -121,7 +129,7 @@ class DonateState extends MusicBeatState {
 	}
 
 	function changeSelection(change:Int = 0) {
-		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+		FlxG.sound.play(PathsList.themeSound('scrollMenu'), ClientPrefs.data.soundVolume);
 		do {
 			curSelected += change;
 			if (curSelected < 0)
